@@ -9,14 +9,7 @@
 
 <body>
 	<header>
-		{{#if user}}
-			{{ user.username }}
-			<a href="/article/add">Add</a>
-		{{else}}
-			<a href="/login">Login</a>
-			<a href="/register">Register</a>
-		{{/if}}
-		<a href="/">Home</a>
+
 	</header>
 	{{{ body }}}
 </body>
