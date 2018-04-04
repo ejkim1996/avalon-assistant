@@ -1,116 +1,125 @@
-The content below is an example project proposal / requirements document. Replace the text below the lines marked "__TODO__" with details specific to your project. Remove the "TODO" lines.
-
-(___TODO__: your project name_)
-
-# Shoppy Shoperson 
+# Avalon Assistant
 
 ## Overview
 
-(___TODO__: a brief one or two paragraph, high-level description of your project_)
+My friends and I played a game called The Resistance: Avalon over spring break, and we had a lot of fun.
 
-Remembering what to buy at the grocery store is waaaaay too difficult. Also, shopping for groceries when you're hungry leads to regrettable purchases. Sooo... that's where Shoppy Shoperson comes in!
+"The Resistance: Avalon pits the forces of Good and Evil in a battle to control the future of civilization. Arthur represents the future of Britain, a promise of prosperity and honor, yet hidden among his brave warriors are Mordred's unscrupulous minions. These forces of evil are few in number but have knowledge of each other and remain hidden from all but one of Arthur's servants. Merlin alone knows the agents of evil, but he must speak of this only in riddles. If his true identity is discovered, all will be lost."
 
-Shoppy Shoperson is a web app that will allow users to keep track of multiple grocery lists. Users can register and login. Once they're logged in, they can create or view their grocery list. For every list that they have, they can add items to the list or cross off items.
+However, the one thing that wasn't so ideal about the game was that because select characters needed to know of people playing specific characters while others needed to stay without that information, every game started off with all of us closing our eyes and someone reading off instructions for select characters to raise their thumb or open their eyes.
 
+Avalon Assistant is a web app that will allow a group of players to create a session that assigns characters AND gives select characters the information they need. It will also let users minimally keep track of the quest progression (successes/fails) and the people who went on each quest.
 
 ## Data Model
 
-(___TODO__: a description of your application's data and their relationships to each other_) 
+The application will store Games, Users, Characters, and Quests.
 
-The application will store Users, Lists and Items
-
-* users can have multiple lists (via references)
+* Games can have multiple Users, Characters, and Quests.
+* 
+users can have multiple lists (via references)
 * each list can have multiple items (by embedding)
 
-(___TODO__: sample documents_)
+An Example Game with Embedded Quests:
+
+```javascript
+{
+  players: //an array of player objects that stores player names and the characters they are playing
+  quests: [
+    { 
+      numOfChars: "2", 
+      players: [
+        { username: "avalonplayer1" }
+        { username: "avalonplayer2" } 
+      ], 
+      status: "success" 
+    }
+    ...
+    { 
+      numOfChars: "3", 
+      players: [
+        { username: "avalonplayer1" }
+        { username: "avalonplayer2" } 
+        { username: "avalonplayer3" } 
+      ], 
+      status: "fail" 
+    }
+  ]
+}
+```
 
 An Example User:
 
 ```javascript
 {
-  username: "shannonshopper",
-  hash: // a password hash,
-  lists: // an array of references to List documents
+  username: "avalonplayer",
+  name: "Jonathan",
+  hash: // a password hash
 }
 ```
 
-An Example List with Embedded Items:
+An Example Character:
 
 ```javascript
 {
-  user: // a reference to a User object
-  name: "Breakfast foods",
-  items: [
-    { name: "pancakes", quantity: "9876", checked: false},
-    { name: "ramen", quantity: "2", checked: true},
-  ],
-  createdAt: // timestamp
+  name: "avaloncharacter",
+  description: //description of character and who the character gets to know
+  knowledge: //an array of character names that the character can know
 }
 ```
 
-
 ## [Link to Commented First Draft Schema](db.js) 
-
-(___TODO__: create a first draft of your Schemas in db.js and link to it_)
 
 ## Wireframes
 
-(___TODO__: wireframes for all of the pages on your site; they can be as simple as photos of drawings or you can use a tool like Balsamiq, Omnigraffle, etc._)
+/game/host - page for creating/hosting a new game
+![game host](documentation/game-host.png)
 
-/list/create - page for creating a new shopping list
+/game/join - page for users to join a game being hosted
+![game join](documentation/game-join.png)
 
-![list create](documentation/list-create.png)
+/game/play - page showing users their assigned character
+![game play](documentation/game-play.png)
 
-/list - page for showing all shopping lists
+/game/quest/add - page for adding quest results to current game
+![quest add](documentation/game-quest-add.png)
 
-![list](documentation/list.png)
 
-/list/slug - page for showing specific shopping list
+/game/quest/slug - page for showing stored quest results
+![quest slug](documentation/game-quest-slug.png)
 
-![list](documentation/list-slug.png)
 
 ## Site map
 
-(___TODO__: draw out a site map that shows how pages are related to each other_)
-
-Here's a [complex example from wikipedia](https://upload.wikimedia.org/wikipedia/commons/2/20/Sitemap_google.jpg), but you can create one without the screenshots, drop shadows, etc. ... just names of pages and where they flow to.
+![site map](documentation/site-map.png)
 
 ## User Stories or Use Cases
 
-(___TODO__: write out how your application will be used through [user stories](http://en.wikipedia.org/wiki/User_story#Format) and / or [use cases](https://www.mongodb.com/download-center?jmp=docs&_ga=1.47552679.1838903181.1489282706#previous)_)
-
 1. as non-registered user, I can register a new account with the site
 2. as a user, I can log in to the site
-3. as a user, I can create a new grocery list
-4. as a user, I can view all of the grocery lists I've created in a single list
-5. as a user, I can add items to an existing grocery list
-6. as a user, I can cross off items in an existing grocery list
+3. as a user, I can create/host a game
+4. as a user, I can join a existing game with a game ID
+5. as a user, I can see data for the character I am playing
+6. as a user, I can see quest data for the current game
 
 ## Research Topics
 
-(___TODO__: the research topics that you're planning on working on along with their point values... and the total points of research topics listed_)
-
 * (5 points) Integrate user authentication
-    * I'm going to be using passport for user authentication
-    * And account has been made for testing; I'll email you the password
-    * see <code>cs.nyu.edu/~jversoza/ait-final/register</code> for register page
-    * see <code>cs.nyu.edu/~jversoza/ait-final/login</code> for login page
-* (4 points) Perform client side form validation using a JavaScript library
-    * see <code>cs.nyu.edu/~jversoza/ait-final/my-form</code>
-    * if you put in a number that's greater than 5, an error message will appear in the dom
-* (5 points) vue.js
-    * used vue.js as the frontend framework; it's a challenging library to learn, so I've assigned it 5 points
+    * I'm going to be using both passport and passport-google-oath for user authentication
+* (4 points) Perform client side form validation using validate.js
+    * I'm going to have client side form validation for adding quests.
+* (5 points) react.js
+    * I'm going to use react.js as the frontend framework
 
-10 points total out of 8 required points (___TODO__: addtional points will __not__ count for extra credit_)
+14 points total out of 8 required points.
 
+* (2 points) Sass
+    * I'm going to use Sass if I have enough time to learn how to use it
 
 ## [Link to Initial Main Project File](app.js) 
 
-(___TODO__: create a skeleton Express application with a package.json, app.js, views folder, etc. ... and link to your initial app.js_)
-
 ## Annotations / References Used
 
-(___TODO__: list any tutorials/references/etc. that you've based your code off of_)
-
-1. [passport.js authentication docs](http://passportjs.org/docs) - (add link to source code that was based on this)
-2. [tutorial on vue.js](https://vuejs.org/v2/guide/) - (add link to source code that was based on this)
+1. [passport.js authentication docs](http://passportjs.org/docs) - (link to source code coming soon)
+2. [tutorial on react.js](https://reactjs.org/tutorial/tutorial.html) - (link to source code coming soon)
+3. [validate.js validation docs](https://validatejs.org/) - (link to source code coming soon)
+4. [tutorial on Sass](https://sass-lang.com/guide) - (link to source code coming soon)
