@@ -14,10 +14,7 @@ Avalon Assistant is a web app that will allow a group of players to create a ses
 
 The application will store Games, Users, Characters, and Quests.
 
-* Games can have multiple Users, Characters, and Quests.
-* 
-users can have multiple lists (via references)
-* each list can have multiple items (by embedding)
+* Games can have multiple Quests (by embedding)
 
 An Example Game with Embedded Quests:
 
@@ -32,8 +29,7 @@ An Example Game with Embedded Quests:
         { username: "avalonplayer2" } 
       ], 
       status: "success" 
-    }
-    ...
+    },
     { 
       numOfChars: "3", 
       players: [
