@@ -1,0 +1,10 @@
+body {
+    /* font-family: Arial, Helvetica, sans-serif; */
+    text-align: center;   
+}
+
+#content {
+    width: 30vw;
+    /* border: solid black 1px; */
+    margin: 2% auto;
+}

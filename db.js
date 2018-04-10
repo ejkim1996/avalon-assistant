@@ -47,4 +47,4 @@ mongoose.model('Quest', QuestSchema);
 mongoose.model('Character', CharacterSchema);
 mongoose.model('Game', GameSchema);
 
-mongoose.connect('mongodb://localhost/final-project');
+mongoose.connect(process.env.MONGODB_URI);

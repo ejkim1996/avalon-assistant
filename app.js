@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 // const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-// require('./db');
+require('./db');
 // const Quest = mongoose.model('Quest');
-// const Game = mongoose.model('Game');
+const Game = mongoose.model('Game');
 // const User = mongoose.model('User');
 
 const session = require('express-session');
@@ -52,12 +52,12 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-app.get('/game/host', (req, res) => {
+app.get('/game/create', (req, res) => {
 
 });
 
 app.get('/game/join', (req, res) => {
-
+    res.render('join');
 });
 
 app.post('/game/join', (req, res) => {
@@ -103,4 +103,4 @@ app.post('/login', (req, res) => {
 //         res.redirect('/');
 //     });
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
