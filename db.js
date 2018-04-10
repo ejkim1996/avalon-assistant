@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 // users
 // * our site requires authentication...
 // * so users have a username, name, and password
-const User = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     // username provided by authentication plugin
     // name provided by authentication plugin
     // password hash provided by authentication plugin
@@ -14,7 +14,7 @@ const User = new mongoose.Schema({
 // * includes number of characters that went on the quest
 // * includes the usernames of the characters on the quest
 // * records the success/failure of the quest
-const Quest = new mongoose.Schema({
+const QuestSchema = new mongoose.Schema({
     numOfChars: { type: Number, min: 2, required: true },
     players: [{ type: String, required: true }],
     status: { type: String, required: true }
@@ -24,7 +24,7 @@ const Quest = new mongoose.Schema({
 // * stores details of a character
 // * knowledge stores an array names of characters that 
 //   the character needs knowledge of
-const Character = new mongoose.Schema({
+const CharacterSchema = new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     knowledge: [{ type: String, required: true }]
@@ -34,12 +34,12 @@ const Character = new mongoose.Schema({
 // * stores current quests
 // * has an array of players that associates names of
 //   players with their characters
-const Game = new mongoose.Schema({
+const GameSchema = new mongoose.Schema({
     players: [{
         name: { type: String, required: true },
         character: { type: String, required: true }
     }],
-    quests: [Quest]
+    quests: [QuestSchema]
 });
 
 mongoose.model('User', UserSchema);
