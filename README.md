@@ -8,7 +8,7 @@ My friends and I played a game called The Resistance: Avalon over spring break, 
 
 However, the one thing that wasn't so ideal about the game was that because select characters needed to know of people playing specific characters while others needed to stay without that information, every game started off with all of us closing our eyes and someone reading off instructions for select characters to raise their thumb or open their eyes.
 
-Avalon Assistant is a web app that will allow a group of players to create a session that assigns characters AND gives select characters the information they need. It will also let users minimally keep track of the quest progression (successes/fails) and the people who went on each quest.
+Avalon Assistant is a web app that will allow a group of players to create a session that assigns characters and gives select characters the information they need. It will also let users minimally keep track of the quest progression (successes/fails) and the people who went on each quest.
 
 ## Data Model
 
@@ -20,24 +20,34 @@ An Example Game with Embedded Quests:
 
 ```javascript
 {
-  players: //an array of player objects that stores player names and the characters they are playing
+  //an array of player objects that stores player names and the characters they are playing
+  players: [
+    {
+      name: "avalonplayer1",
+      character: "Merlin"
+    }
+    {
+      name: "avalonplayer2",
+      character: "Mordred"
+    }
+  ]
   quests: [
     { 
-      numOfChars: "2", 
+      numOfPlayers: "2", 
       players: [
-        { username: "avalonplayer1" }
-        { username: "avalonplayer2" } 
+        "avalonplayer1",
+        "avalonplayer2" 
       ], 
-      status: "success" 
+      success: true
     },
     { 
-      numOfChars: "3", 
+      numOfPlayers: "3", 
       players: [
-        { username: "avalonplayer1" }
-        { username: "avalonplayer2" } 
-        { username: "avalonplayer3" } 
+        "avalonplayer1",
+        "avalonplayer2",
+        "avalonplayer3"
       ], 
-      status: "fail" 
+      success: false
     }
   ]
 }
@@ -49,7 +59,7 @@ An Example User:
 {
   username: "avalonplayer",
   name: "Jonathan",
-  hash: // a password hash
+  password: // a password hash
 }
 ```
 
@@ -105,11 +115,10 @@ An Example Character:
     * I'm going to have client side form validation for adding quests.
 * (5 points) react.js
     * I'm going to use react.js as the frontend framework
+* (2 points) Bootstrap
+    * I'm going to use Bootstrap to style the website
 
-14 points total out of 8 required points.
-
-* (2 points) Sass
-    * I'm going to use Sass if I have enough time to learn how to use it
+16 points total out of 8 required points.
 
 ## [Link to Initial Main Project File](app.js) 
 
@@ -118,4 +127,4 @@ An Example Character:
 1. [passport.js authentication docs](http://passportjs.org/docs) - (link to source code coming soon)
 2. [tutorial on react.js](https://reactjs.org/tutorial/tutorial.html) - (link to source code coming soon)
 3. [validate.js validation docs](https://validatejs.org/) - (link to source code coming soon)
-4. [tutorial on Sass](https://sass-lang.com/guide) - (link to source code coming soon)
+4. [tutorial on Bootstrap](https://getbootstrap.com/docs/4.1/components/alerts/) - (link to source code coming soon)

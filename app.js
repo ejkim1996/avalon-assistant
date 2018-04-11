@@ -52,9 +52,9 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-app.get('/game/create', (req, res) => {
+// app.get('/game/create', (req, res) => {
 
-});
+// });
 
 app.get('/game/join', (req, res) => {
     res.render('join');
@@ -119,13 +119,13 @@ app.post('/quest/add', (req, res) => {
     });
 });
 
-app.get('/login', (req, res) => {
+// app.get('/login', (req, res) => {
 
-});
+// });
 
-app.post('/login', (req, res) => {
+// app.post('/login', (req, res) => {
 
-});
+// });
 
 // // GET /auth/google
 // //   Use passport.authenticate() as route middleware to authenticate the

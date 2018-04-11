@@ -9,6 +9,8 @@ body {
     margin: 2% auto;
 }
 
+/* following styles from https://bootsnipp.com/snippets/l08xq */
+
 .block {
     width: 25%;
     height: 150px;
@@ -46,7 +48,6 @@ body {
 }
 
 .hovicon:before {
-    speak: none;
     font-size: 48px;
     line-height: 90px;
     font-style: normal;
