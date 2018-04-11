@@ -8,3 +8,96 @@ body {
     /* border: solid black 1px; */
     margin: 2% auto;
 }
+
+.block {
+    width: 25%;
+    height: 150px;
+    margin: 0 auto;  
+    transform: translateX(-28%);    
+    /* border: solid black 1px; */
+}
+
+.hovicon {    
+    display: inline-block;
+    font-size: 45px;
+    line-height: 90px;
+    cursor: pointer;
+    margin: 20px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    text-align: center;
+    position: relative;
+    text-decoration: none;
+    z-index: 1;
+    color: #fff;
+}
+
+.hovicon:after {
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    content:'';
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+}
+
+.hovicon:before {
+    speak: none;
+    font-size: 48px;
+    line-height: 90px;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    display: block;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Effect 9 */
+ .hovicon.effect-9 {
+    -webkit-transition: box-shadow 0.2s;
+    -moz-transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s;
+}
+.hovicon.effect-9:after {
+    top: 0;
+    left: 0;
+    padding: 0;
+    box-shadow: 0 0 0 3px #fff;
+    -webkit-transition: -webkit-transform 0.2s, opacity 0.2s;
+    -moz-transition: -moz-transform 0.2s, opacity 0.2s;
+    transition: transform 0.2s, opacity 0.2s;
+}
+/* Effect 9a */
+ .hovicon.effect-9.sub-a:hover:after {
+    -webkit-transform: scale(0.85);
+    -moz-transform: scale(0.85);
+    -ms-transform: scale(0.85);
+    transform: scale(0.85);
+    opacity: 0.5;
+}
+.hovicon.effect-9.sub-a:hover {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 1);
+    color: #fff;
+}
+.hovicon.effect-9.sub-a:hover i {
+    color: #fff;
+}
+/* Effect 9b */
+ .hovicon.effect-9.sub-b:hover:after {
+    -webkit-transform: scale(0.85);
+    -moz-transform: scale(0.85);
+    -ms-transform: scale(0.85);
+    transform: scale(0.85);
+}
+.hovicon.effect-9.sub-b:hover {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.4);
+    color: #fff;
+}
+.hovicon.effect-9.sub-b:hover i {
+    color: #fff;
+}

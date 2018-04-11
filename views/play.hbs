@@ -1,0 +1,19 @@
+<div class="card text-center text-white bg-dark mb-3 w-100" style="width: 18rem;">
+    <div class="card-body">
+        <h3 class="card-title">Quests</h3>
+        {{#each quests}}
+            <div>
+                {{#if success}} 
+                    <div class="block">
+                        <i class="hovicon effect-9 sub-a">S</i>
+                    </div>
+                {{else}} 
+                    <div class="block">
+                        <i class="hovicon effect-9 sub-b">F</i>
+                    </div>
+                {{/if}}
+            </div>
+            
+        {{/each}}
+    </div>
+</div>

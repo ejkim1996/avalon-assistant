@@ -15,9 +15,9 @@ const UserSchema = new mongoose.Schema({
 // * includes the usernames of the characters on the quest
 // * records the success/failure of the quest
 const QuestSchema = new mongoose.Schema({
-    numOfChars: { type: Number, min: 2, required: true },
+    numOfPlayers: { type: Number, min: 2, required: true },
     players: [{ type: String, required: true }],
-    status: { type: String, required: true }
+    success: { type: Boolean, required: true }
 });
 
 // a character

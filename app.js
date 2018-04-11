@@ -5,7 +5,7 @@ const passport = require('passport');
 // const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 require('./db');
-// const Quest = mongoose.model('Quest');
+const Quest = mongoose.model('Quest');
 const Game = mongoose.model('Game');
 // const User = mongoose.model('User');
 
@@ -61,19 +61,62 @@ app.get('/game/join', (req, res) => {
 });
 
 app.post('/game/join', (req, res) => {
+    const gameID = req.body.gameID;
 
+    Game.find({}, (err, games) => {
+        if (err) {
+            console.log(err);
+        } else {
+            games = games.filter((game) => {
+                return game.id.includes(gameID);
+            });
+            let hostPath = '/game/host/';
+            hostPath = hostPath.concat(games[0]);
+            res.redirect(hostPath);
+        }
+    });
 });
 
 app.get('/game/play', (req, res) => {
+    Game.find({}, (err, games) => {
+        res.render('play', {quests: games[0].quests});
+    });
+});
 
+app.get('/debug', (req, res) => {
+    Game.find({}, (err, games) => {
+        console.log(games[0].quests);
+        res.redirect('/');
+    });
 });
 
 app.get('/quest/add', (req, res) => {
-
+    Game.find({}, (err, games) => {
+        res.render('quest-add', { players: games[0].players});        
+    });
 });
 
 app.post('/quest/add', (req, res) => {
-
+    Game.find({}, (err, games) => {
+        const statusBoolean = req.body.gridRadios === "success" ? true : false;
+        
+        const newQuest = new Quest({
+            numOfPlayers: req.body.numOfPlayers,
+            players: req.body.players,
+            success: statusBoolean
+        });
+        games[0].quests.push(newQuest);
+        games[0].save((err, updatedGame) => {
+            if (err) {
+                console.log(err);
+                
+            }
+            if (!err) {
+                console.log(updatedGame.quests);
+            }
+        });
+        res.redirect('/game/play');
+    });
 });
 
 app.get('/login', (req, res) => {

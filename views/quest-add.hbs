@@ -1,0 +1,56 @@
+<div class="card text-center text-white bg-dark mb-3 w-100" style="width: 18rem;">
+    <div class="card-body">
+        <h3 class="card-title">Add a Quest</h3>
+        <form method="POST">
+            <div class="form-group row">
+                <label class="col-sm-6 col-form-label" for="numberOfPlayers">Number of Players</label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="numberOfPlayers" name="numOfPlayers">
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">Players</div>
+                <div class="col-sm-6 text-left">
+                    {{#each players}}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="gridCheck{{@index}}" name="players" value="{{name}}">
+                        <label class="form-check-label" for="gridCheck{{@index}}">
+                            {{name}}
+                        </label>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            <fieldset class="form-group">
+                <div class="row">
+                    <legend class="col-form-label col-sm-6 pt-0">Result</legend>
+                    <div class="col-sm-6 text-left">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="success">
+                            <label class="form-check-label" for="gridRadios1">
+                                Success
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="fail">
+                            <label class="form-check-label" for="gridRadios2">
+                                Fail
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            
+        
+            <button type="submit" class="btn btn-light">
+                Add
+            </button>
+        </form>
+    </div>
+</div>
