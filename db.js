@@ -6,8 +6,13 @@ const mongoose = require('mongoose');
 // * so users have a username, name, and password
 const UserSchema = new mongoose.Schema({
     // username provided by authentication plugin
+    name: String,
     // name provided by authentication plugin
     // password hash provided by authentication plugin
+    // email: String,
+    googleID: String,
+    provider: String,
+    // google: {}
 });
 
 // a quest within a game
@@ -27,7 +32,8 @@ const QuestSchema = new mongoose.Schema({
 const CharacterSchema = new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
-    knowledge: [{ type: String, required: true }]
+    knowledge: [{ type: String, required: true }],
+    select: Boolean
 });
 
 // a game
@@ -35,10 +41,12 @@ const CharacterSchema = new mongoose.Schema({
 // * has an array of players that associates names of
 //   players with their characters
 const GameSchema = new mongoose.Schema({
+    gameID: String,
     players: [{
         name: { type: String, required: true },
         character: { type: String, required: true }
     }],
+    characters: [{ type: String, required: true }],
     quests: [QuestSchema]
 });
 

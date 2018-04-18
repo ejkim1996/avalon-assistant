@@ -9,11 +9,26 @@
         Join Game
     </a> --}}
 
-    <a class="btn btn-outline-dark btn-lg btn-block" href="/quest/add" role="button">
+    {{#if user}}
+    {{else}}
+        <a class="btn btn-outline-dark btn-lg btn-block" href="/login" role="button">
+            Log In
+        </a>
+    {{/if}}
+
+    {{!-- <a class="btn btn-outline-dark btn-lg btn-block" href="/quest/add" role="button">
         Add Quest
+    </a> --}}
+
+    {{!-- <a class="btn btn-outline-dark btn-lg btn-block" href="/game/play" role="button">
+        Play Game
+    </a> --}}
+
+    <a class="btn btn-outline-dark btn-lg btn-block" href="/game/create" role="button">
+        Create Game
     </a>
 
-    <a class="btn btn-outline-dark btn-lg btn-block" href="/game/play" role="button">
-        Play Game
+    <a class="btn btn-outline-dark btn-lg btn-block" href="/game/join" role="button">
+        Join Game
     </a>
 </div>
