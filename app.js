@@ -1,8 +1,9 @@
 const express = require('express');
+
 const mongoose = require('mongoose');
 // const validate = require('validate.js');
 const passport = require('passport');
-const shuffle = require('shuffle-array')
+const shuffle = require('shuffle-array');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const GOOGLE_CLIENT_ID = "632766466320-ntejgmhjef384di7cf1aqduicbie1ish.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = "MTPjF9oONiEwF3cLQ-gW-oeg";
@@ -17,6 +18,8 @@ const session = require('express-session');
 const path = require('path');
 
 const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
 app.set('view engine', 'hbs');
 
@@ -147,7 +150,8 @@ app.get('/game/create', (req, res) => {
 });
 
 app.post('/game/create', (req, res) => {
-    const characters = req.body.characters;
+    let characters = req.body.characters;
+    const gameID = req.body.gameID;
     const numberOfServants = +req.body.numberOfServants;
     const numberOfMinions = +req.body.numberOfMinions;
 
@@ -159,9 +163,10 @@ app.post('/game/create', (req, res) => {
         characters.push('Minion of Mordred');
     }
 
-    shuffle(characters);
+    characters = shuffle(characters);
 
     const newGame = new Game({
+        gameID: gameID,
         players: [{
             name: req.user.name,
             character: characters.pop()
@@ -169,23 +174,26 @@ app.post('/game/create', (req, res) => {
         characters: characters,
         quests: []
     });
-    console.log(newGame);
-    
+
 
     newGame.save((err, savedGame) => {
         if (err) {
             console.log(err);
         } else {
-            req.locals.gameID = ""+savedGame._id.slice(0, 5);
-            savedGame.gameID = req.locals.gameID;
-            savedGame.save((err, savedGameWithID) => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log(savedGameWithID);
-                    res.render('host');                    
-                }
-            });
+            // req.locals.gameID = ""+savedGame._id.slice(0, 5);
+            // savedGame.gameID = req.locals.gameID;
+            // savedGame.save((err, savedGameWithID) => {
+            //     if (err) {
+            //         console.log(err);
+            //     } else {
+            //         console.log(savedGameWithID);
+            //         res.render('host');                    
+            //     }
+            // });
+            console.log(savedGame);
+
+            res.redirect('/game/host/' + gameID);
+
         }
     });
 
@@ -225,27 +233,127 @@ app.get('/game/join', (req, res) => {
 
 app.post('/game/join', (req, res) => {
     const gameID = req.body.gameID;
+    const query = {
+        gameID: gameID
+    };
+    Game.findOne(query, (err, game) => {
+        if (!err) {
+            if (game) {
+                res.redirect('/game/host/' + gameID);
+                // res.render('lobby', { players: game.players });
 
-    Game.find({}, (err, games) => {
-        if (err) {
-            console.log(err);
+            } else {
+                res.redirect('/game/join');
+            }
         } else {
-            games = games.filter((game) => {
-                return game.id.includes(gameID);
-            });
-            let hostPath = '/game/host/';
-            hostPath = hostPath.concat(games[0]);
-            res.redirect(hostPath);
+            console.log(err);
+            // res.redirect('/');
         }
     });
+    // Game.find({}, (err, games) => {
+    //     if (err) {
+    //         console.log(err);
+    //     } else {
+    //         games = games.filter((game) => {
+    //             return game.id.includes(gameID);
+    //         });
+    //         let hostPath = '/game/host/';
+    //         hostPath = hostPath.concat(games[0]);
+    //         res.redirect(hostPath);
+    //     }
+    // });
 });
 
-app.get('/game/play', (req, res) => {
+app.get('/game/play/:gameID', (req, res) => {
     if (req.user === undefined) {
         res.redirect('/login');
     } else {
-        Game.find({}, (err, games) => {
-            res.render('play', { quests: games[0].quests });
+        const gameID = req.params.gameID;
+        const name = req.user.name;
+
+        const query = {
+            gameID: gameID
+        };
+        
+        Game.findOne(query, (err, game) => {
+            const context = {};
+            game.players.forEach(player => {
+                if (player.name === name) {
+                    Character.findOne({name: player.character}, (err, character) => {
+                        context.character = character;
+                    });
+                }
+            });
+            context.quests = game.quests;
+            res.render('play', context);
+        });
+    }
+});
+
+app.get('/game/host/:gameID', (req, res) => {
+    if (req.user === undefined) {
+        res.redirect('/login');
+    } else {
+        const gameID = req.params.gameID;
+
+        const query = {
+            gameID: gameID
+        };
+
+
+
+        Game.findOne(query, (err, game) => {
+            if (!err) {
+                // console.log(game);
+                let playerExists = false;
+                game.players.forEach((player) => {
+                    if (player.name === req.user.name) {
+                        playerExists = true;
+                    }
+                    // Object.keys(player).forEach(function (key) {
+                    //     if (player[key] === req.user) {
+                    //         alert('exists');
+                    //     }
+                    // });
+                });
+
+                if (!playerExists) {
+                    game.players.push({ name: req.user.name, character: game.characters.pop() });
+                }
+
+                game.save();
+
+                res.render('lobby', { gameID: gameID }/* , { players: game.players } */);
+                // res.render('lobby', { players: game.players });
+
+            } else {
+                console.log(err);
+                // res.redirect('/');
+            }
+        });
+
+        // res.render('lobby');
+
+
+
+    }
+
+});
+
+app.post('/game/host/:gameID', (req, res) => {
+    if (req.user === undefined) {
+        res.redirect('/login');
+    } else {
+        const query = {
+            gameID: req.params.gameID
+        };
+        Game.findOne(query, (err, game) => {
+            if (!err) {
+                res.render('lobby', { players: game.players });
+            } else {
+                console.log(err);
+                // res.redirect('/');
+            }
         });
     }
 
@@ -277,7 +385,6 @@ app.post('/quest/add', (req, res) => {
         games[0].save((err, updatedGame) => {
             if (err) {
                 console.log(err);
-
             }
             if (!err) {
                 console.log(updatedGame.quests);
@@ -295,6 +402,20 @@ app.get('/login', (req, res) => {
 
 // });
 
+io.on('connection', (socket) => {
+    console.log(socket.id, 'has connected');
 
+    socket.on('newPlayerConnected', (gameID) => {
+        Game.findOne({ gameID: gameID }, (err, game) => {
+            socket.emit('showPlayers', game.players);
+            socket.broadcast.emit('showPlayers', game.players);
+        });
+    });
 
-app.listen(process.env.PORT || 3000);
+    socket.on('playBtnPressed', (data) => {
+        socket.emit('startGame', data);
+        socket.broadcast.emit('startGame', data);
+    });
+});
+
+server.listen(process.env.PORT || 3000);

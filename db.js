@@ -41,7 +41,7 @@ const CharacterSchema = new mongoose.Schema({
 // * has an array of players that associates names of
 //   players with their characters
 const GameSchema = new mongoose.Schema({
-    gameID: String,
+    gameID: { type: String, unique: true },
     players: [{
         name: { type: String, required: true },
         character: { type: String, required: true }

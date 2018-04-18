@@ -1,19 +1,9 @@
-<h2>Login</h2>
 {{#if message}}
 <div class="error">{{ message }}</div>
 {{/if}}
-{{!-- <form method="POST" action="login">
-	<div>
-		<label for="username">Username:</label>
-		<input type="text" name="username" value="">
+<div class="card text-center text-white bg-dark mb-3" style="width: 20rem; margin: 0 auto;">
+	<div class="card-body">
+		<h3 class="card-title">Login</h3>
+		<a class="btn btn-light" href="/auth/google" role="button">Sign In with Google</a>
 	</div>
-	<div>
-		<label for="password">Password:</label> 
-		<input type="password" name="password" value="">
-	</div>
-	<div>
-		<input type="submit" value="Login">
-	</div>
-</form> --}}
-<a href="/auth/google">Sign In with Google</a>
-
+</div>
