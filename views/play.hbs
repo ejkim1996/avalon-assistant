@@ -1,19 +1,55 @@
-<div class="card text-center text-white bg-dark mb-3 w-100" style="width: 18rem;">
-    <div class="card-body">
-        <h3 class="card-title">Quests</h3>
-        {{#each quests}}
-            <div>
-                {{#if success}} 
+<script src="/socket.io/socket.io.js"></script>
+<script src="/play.js"></script>
+
+<div class="row">
+    <div class="col-sm-1 ml-auto"></div>
+    
+    <div class="col-sm-6 ml-auto">
+        <div class="card text-center text-white bg-dark mb-3 w-100">
+            <div class="card-body">
+                <h3 class="card-title">Details</h3>
+                <h6 class="card-title gameID">{{gameID}}</h6>
+
+                <div class="card-text text-left">
+                    Character: {{character.name}}
+                    <br>
+                    Description: {{character.description}}
+                    <br>
+                    Knowledge: {{knowledge}}
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5 ml-auto lobby-parent">
+
+        <div class="card text-center text-white bg-dark mb-3" style="width: 20rem; margin: 0 auto;">
+            <div class="card-body quests-parent">
+                <h3 class="card-title">Quests</h3>
+                <div class="quests">
+                    <div class="completed-quests"></div>
+                    <div class="empty-quests"></div>
+                </div>
+                
+                
+                {{!-- {{#each quests}}
+                <div>
+                    {{#if success}}
                     <div class="block">
                         <i class="hovicon effect-9 sub-a">S</i>
                     </div>
-                {{else}} 
+                    {{else}}
                     <div class="block">
                         <i class="hovicon effect-9 sub-b">F</i>
                     </div>
-                {{/if}}
+                    {{/if}}
+                    
+                </div>
+
+                {{/each}}
+                    <i class="hovicon effect-9"></i>
+                </div> --}}
             </div>
-            
-        {{/each}}
+        </div>
     </div>
 </div>

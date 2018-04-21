@@ -5,8 +5,6 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const shuffle = require('shuffle-array');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const GOOGLE_CLIENT_ID = "632766466320-ntejgmhjef384di7cf1aqduicbie1ish.apps.googleusercontent.com";
-const GOOGLE_CLIENT_SECRET = "MTPjF9oONiEwF3cLQ-gW-oeg";
 
 require('./db');
 const Quest = mongoose.model('Quest');
@@ -50,9 +48,9 @@ passport.deserializeUser(function (user, done) {
 //   credentials (in this case, an accessToken, refreshToken, and Google
 //   profile), and invoke a callback with a user object.
 passport.use(new GoogleStrategy({
-    clientID: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:5000/auth/google/callback"
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.CALLBACK_URL
 },
     function (accessToken, refreshToken, profile, done) {
         // User.findOrCreate({ googleId: profile.id }, function (err, user) {
@@ -134,8 +132,7 @@ app.get('/auth/google/callback',
     });
 
 
-
-app.get('/', (req, res) => {
+app.get('/', (req, res) => {    
     res.render('index');
 });
 
@@ -281,11 +278,23 @@ app.get('/game/play/:gameID', (req, res) => {
                 if (player.name === name) {
                     Character.findOne({name: player.character}, (err, character) => {
                         context.character = character;
+                        context.quests = game.quests;
+                        context.knowledge = [];
+                        context.gameID = gameID;
+                        
+                        game.players.forEach(player => {
+                            if (character.knowledge.includes(player.character)) {
+                                context.knowledge.push(player.name);
+                            }
+                        });
+                        
+                        // character.knowledge.forEach(otherChar => {
+                            
+                        // });
+                        res.render('play', context);
                     });
                 }
             });
-            context.quests = game.quests;
-            res.render('play', context);
         });
     }
 });
@@ -415,6 +424,13 @@ io.on('connection', (socket) => {
     socket.on('playBtnPressed', (data) => {
         socket.emit('startGame', data);
         socket.broadcast.emit('startGame', data);
+    });
+
+    socket.on('playScreenLoaded', (gameID) => {
+        Game.findOne({ gameID: gameID }, (err, game) => {
+            socket.emit('showQuests', game.quests);
+            socket.broadcast.emit('showQuests', game.quests);
+        });
     });
 });
 
