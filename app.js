@@ -261,6 +261,12 @@ app.post('/game/join', (req, res) => {
     // });
 });
 
+app.get('/game/play', (req, res) => {
+    Game.find({}, (err, games) => {
+        res.render('playtest', { quests: games[0].quests });
+    });
+});
+
 app.get('/game/play/:gameID', (req, res) => {
     if (req.user === undefined) {
         res.redirect('/login');
