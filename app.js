@@ -189,94 +189,66 @@ app.post('/game/join', (req, res) => {
 });
 
 // GET /game/lobby/:gameSlug
-//   
+//   Join a game based on the gameSlug param.
+//   Lobby lists people that have joined.
 app.get('/game/lobby/:gameSlug', (req, res) => {
     if (req.user === undefined) {
         res.redirect('/login');
     } else {
-        const gameSlug = req.params.gameSlug;
-
-        Game.findOne({gameSlug: gameSlug}, (err, game) => {
+        Game.findOne({ gameSlug: req.params.gameSlug }, (err, game) => {
             if (!err) {
-                // console.log(game);
-                let playerExists = false;
-                game.players.forEach((player) => {
-                    if (player.name === req.user.name) {
-                        playerExists = true;
+                if (game) {
+                    // check if the player that just joined
+                    // is already in the game's player list
+                    let playerExists = false;
+                    game.players.forEach((player) => {
+                        if (player.name === req.user.name) {
+                            playerExists = true;
+                        }
+                    });
+
+                    // if the player doesn't exist in the game,
+                    // then assign a character and add the player
+                    if (!playerExists) {
+                        game.players.push({ name: req.user.name, character: game.characters.pop() });
                     }
-                });
 
-                if (!playerExists) {
-                    game.players.push({ name: req.user.name, character: game.characters.pop() });
+                    game.save();
+
+                    res.render('lobby', { gameID: game.gameID }/* , { players: game.players } */);
+                } else {
+                    res.redirect('/game/join');
                 }
-
-                game.save();
-
-                res.render('lobby', { gameID: game.gameID }/* , { players: game.players } */);
-                // res.render('lobby', { players: game.players });
-
             } else {
                 console.log(err);
-                // res.redirect('/');
-            }
-        });
-
-        // res.render('lobby');
-
-
-
-    }
-
-});
-
-app.post('/game/lobby/:gameSlug', (req, res) => {
-    if (req.user === undefined) {
-        res.redirect('/login');
-    } else {
-        const query = {
-            gameID: req.params.gameID
-        };
-        Game.findOne({gameSlug: req.params.gameSlug}, (err, game) => {
-            if (!err) {
-                res.render('lobby', { players: game.players });
-            } else {
-                console.log(err);
-                // res.redirect('/');
+                res.redirect('/game/join');
             }
         });
     }
-
 });
 
-/* 
-app.get('/game/play', (req, res) => {
-    Game.find({}, (err, games) => {
-        res.render('playtest', { quests: games[0].quests });
-    });
-});
- */
-
+// GET /game/play/:gameSlug
+//   Show players their assigned character and info
+//   they need to know. Also shows quests and allows
+//   adding quests.
 app.get('/game/play/:gameSlug', (req, res) => {
     if (req.user === undefined) {
         res.redirect('/login');
     } else {
-        const gameID = req.params.gameID;
-        const name = req.user.name;
-
-        const query = {
-            gameID: gameID
-        };
-
-        Game.findOne({gameSlug: req.params.gameSlug}, (err, game) => {
-            const context = {};
-            game.players.forEach(player => {
-                if (player.name === name) {
+        Game.findOne({ gameSlug: req.params.gameSlug }, (err, game) => {
+            if (!err) {
+                if (game) {
+                    const context = {};
+                    const player = game.players.filter(player => player.name === req.user.name)[0];
+                    context.quests = game.quests;
+                    context.gameID = game.gameID;
+                    
+                    // Get the names of players who are playing characters
+                    // that you need knowledge of
                     Character.findOne({ name: player.character }, (err, character) => {
-                        context.character = character;
-                        context.quests = game.quests;
                         context.knowledge = [];
-                        context.gameID = game.gameID;
-
+                        context.character = character;
+                        
                         game.players.forEach(player => {
                             if (character.knowledge.includes(player.character)) {
                                 context.knowledge.push(player.name);
@@ -284,99 +256,120 @@ app.get('/game/play/:gameSlug', (req, res) => {
                         });
                         res.render('play', context);
                     });
+                } else {
+                    res.redirect('/game/join');
                 }
-            });
+            } else {
+                res.redirect('/');
+            }
+
         });
     }
 });
 
-/* 
-app.get('/quest/add', (req, res) => {
-    Game.find({}, (err, games) => {
-        res.render('quest-add', { players: games[0].players });
-    });
-});
-
-app.post('/quest/add', (req, res) => {
-    Game.find({}, (err, games) => {
-        const statusBoolean = req.body.gridRadios === "success" ? true : false;
-
-        const newQuest = new Quest({
-            numOfPlayers: req.body.numOfPlayers,
-            players: req.body.players,
-            success: statusBoolean
-        });
-        games[0].quests.push(newQuest);
-        games[0].save((err, updatedGame) => {
-            if (err) {
-                console.log(err);
-            }
-            if (!err) {
-                console.log(updatedGame.quests);
-            }
-        });
-        res.redirect('/game/play');
-    });
-});
- */
-
+// GET /quest/add/:gameSlug
+//   Page to add a quest to the game
+//   specified by the gameSlug
 app.get('/quest/add/:gameSlug', (req, res) => {
-    Game.findOne({gameSlug: req.params.gameSlug}, (err, game) => {
-        res.render('quest-add', { players: game.players, gameID: req.params.gameID, gameSlug: game.gameSlug });
-    });
-});
-
-app.post('/quest/add/:gameSlug', (req, res) => {
-    Game.findOne({gameSlug: req.params.gameSlug}, (err, game) => {
-        const statusBoolean = req.body.gridRadios === "success" ? true : false;
-        const questNum = +game.quests.length + 1;
-
-        const newQuest = new Quest({
-            numOfPlayers: req.body.numOfPlayers,
-            players: req.body.players,
-            success: statusBoolean,
-            questNum: 'quest' + questNum
-        });
-        console.log('req body', req.body);
-        
-        game.quests.push(newQuest);
-        game.save((err, updatedGame) => {
-            if (err) {
-                console.log(err);
-            }
+    if (req.user === undefined) {
+        res.redirect('/login');
+    } else {
+        Game.findOne({ gameSlug: req.params.gameSlug }, (err, game) => {
             if (!err) {
-                console.log(updatedGame.quests);
+                if (game) {
+                    res.render('quest-add', { players: game.players, gameID: req.params.gameID, gameSlug: game.gameSlug });
+                } else {
+                    res.redirect('/game/play/' + req.params.gameSlug);
+                }
+            } else {
+                res.redirect('/game/play/' + req.params.gameSlug);
             }
         });
-        res.redirect('/game/play/' + req.params.gameSlug);
-    });
+    }
 });
 
-app.get('/quest/:gameSlug/:questNum', (req, res) => {
-    Game.findOne({ gameSlug: req.params.gameSlug }, (err, game) => {    
-        console.log(req.params.questNum);
-        
-        // const context = { quest: game.quests.filter(quest => quest._id === req.params.questID)};
-        const context = {};
-        for (let i = 0; i < game.quests.length; i++) {            
-            if (game.quests[i].questNum === req.params.questNum) {
-                context.players = game.quests[i].players;
-                context.playersLength = game.quests[i].players.length;                
-                context.success = game.quests[i].success;
-                context.questNumber = i + 1;
+// GET /quest/add/:gameSlug
+//   Add a quest to the game
+//   specified by the gameSlug
+app.post('/quest/add/:gameSlug', (req, res) => {
+    if (req.user === undefined) {
+        res.redirect('/login');
+    } else {
+        Game.findOne({ gameSlug: req.params.gameSlug }, (err, game) => {
+            if (!err) {
+                if (game) {
+                    const statusBoolean = req.body.gridRadios === "success" ? true : false;
+                    const questNum = +game.quests.length + 1;
+
+                    const newQuest = new Quest({
+                        numOfPlayers: req.body.numOfPlayers,
+                        players: req.body.players,
+                        success: statusBoolean,
+                        questNum: 'quest' + questNum
+                    });
+                    // console.log('req body', req.body);
+
+                    game.quests.push(newQuest);
+                    game.save((err, updatedGame) => {
+                        if (err) {
+                            console.log(err);
+                        }
+                        if (!err) {
+                            console.log(updatedGame.quests);
+                        }
+                    });
+                    res.redirect('/game/play/' + req.params.gameSlug);
+                } else {
+                    res.redirect('/quest/add/' + req.params.gameSlug);
+                }
+            } else {
+                res.redirect('/quest/add/' + req.params.gameSlug);                
             }
-        }
-        context.gameID = game.gameID;
-        // console.log(context);
-        
-        res.render('quest-detail', context);
-    });
+        });
+    }
 });
 
+// GET /quest/:gameSlug/:questNum
+//   Page that has quest details
+app.get('/quest/:gameSlug/:questNum', (req, res) => {
+    if (req.user === undefined) {
+        res.redirect('/login');
+    } else {
+        Game.findOne({ gameSlug: req.params.gameSlug }, (err, game) => {
+            if (!err) {
+                if (game) {
+                    // const context = { quest: game.quests.filter(quest => quest._id === req.params.questID)};
+                    const context = {};
+                    for (let i = 0; i < game.quests.length; i++) {
+                        if (game.quests[i].questNum === req.params.questNum) {
+                            context.players = game.quests[i].players;
+                            context.playersLength = game.quests[i].players.length;
+                            context.success = game.quests[i].success;
+                            context.questNumber = i + 1;
+                        }
+                    }
+                    context.gameID = game.gameID;
+                    context.gameSlug = game.gameSlug;
+                    // console.log(context);
+
+                    res.render('quest-detail', context);
+                } else {
+                    res.redirect('/game/play/' + req.params.gameSlug);
+                }
+            } else {
+                res.redirect('/game/play/' + req.params.gameSlug);
+            }
+        });
+    }
+});
+
+// GET /login
+//   Render login page
 app.get('/login', (req, res) => {
     res.render('login');
 });
 
+// Socket.io events
 io.on('connection', (socket) => {
     console.log(socket.id, 'has connected');
 
@@ -393,7 +386,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('playScreenLoaded', (gameID) => {
-        
+
         Game.findOne({ gameID: gameID }, (err, game) => {
             socket.emit('showQuests', { quests: game.quests, gameSlug: game.gameSlug });
             socket.broadcast.emit('showQuests', { quests: game.quests, gameSlug: game.gameSlug });
