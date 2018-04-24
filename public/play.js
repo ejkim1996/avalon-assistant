@@ -1,20 +1,20 @@
 const socket = io();
 
-function handleQuestCircleClick(gameID, questID) {
-    if (questID === undefined) {
+function handleQuestCircleClick(gameSlug, questNum) {
+    if (questNum === undefined) {
         return function() {
-            window.location.href = '/quest/add/' + gameID;
+            window.location.href = '/quest/add/' + gameSlug;
         };
     } else {
         return function () {
-            window.location.href = '/quest/' + gameID + '/' + questID;
+            window.location.href = '/quest/' + gameSlug + '/quest' + questNum;
         };
     }
 }
 
 socket.on('showQuests', (questsAndGameID) => {
     const quests = questsAndGameID.quests;
-    const gameID = questsAndGameID.gameID;
+    const gameSlug = questsAndGameID.gameSlug;
     console.log(quests[0]);
     const cardBody = document.querySelector('.quests-parent');
     let questsDiv = document.querySelector('.quests');
@@ -41,7 +41,7 @@ socket.on('showQuests', (questsAndGameID) => {
                 questContainer.classList.add('sub-a');
                 // anchor.href = '/quest/' + quests[i]._id;
                 questContainer.textContent = 'S';
-                questContainer.addEventListener('click', handleQuestCircleClick(gameID, quests[i]._id));
+                questContainer.addEventListener('click', handleQuestCircleClick(gameSlug, i+1));
                 completedQuests.append(questContainer);
                 // <i class="hovicon effect-9 sub-a d-block mb-3" style="margin: 0 auto;">S</i>                
             } else {
@@ -50,13 +50,13 @@ socket.on('showQuests', (questsAndGameID) => {
                 questContainer.classList.add('sub-b');                
                 // anchor.href = '/quest/' + quests[i]._id;
                 questContainer.textContent = 'F';
-                questContainer.addEventListener('click', handleQuestCircleClick(gameID, quests[i]._id));                
+                questContainer.addEventListener('click', handleQuestCircleClick(gameSlug, i+1));                
                 completedQuests.append(questContainer);                
             }
         } else {
             const plusContainer = document.createElement('div');
             plusContainer.classList.add('hovicon', 'effect-9', 'd-block', 'mx-auto', 'my-0', 'mb-3', 'font-weight-bold');
-            plusContainer.addEventListener('click', handleQuestCircleClick(gameID));            
+            plusContainer.addEventListener('click', handleQuestCircleClick(gameSlug));            
             plusContainer.textContent = '+'; 
             plusContainer.style.lineHeight = 110 + 'px';         
             emptyQuests.append(plusContainer);

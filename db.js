@@ -22,7 +22,8 @@ const UserSchema = new mongoose.Schema({
 const QuestSchema = new mongoose.Schema({
     numOfPlayers: { type: Number, min: 2, required: true },
     players: [{ type: String, required: true }],
-    success: { type: Boolean, required: true }
+    success: { type: Boolean, required: true },
+    questNum: { type: String, required: true }
 });
 
 // a character

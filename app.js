@@ -320,20 +320,22 @@ app.post('/quest/add', (req, res) => {
 });
  */
 
-app.get('/quest/add/:gameID', (req, res) => {
-    Game.findOne({gameID: req.params.gameID}, (err, game) => {
-        res.render('quest-add', { players: game.players, gameID: req.params.gameID });
+app.get('/quest/add/:gameSlug', (req, res) => {
+    Game.findOne({gameSlug: req.params.gameSlug}, (err, game) => {
+        res.render('quest-add', { players: game.players, gameID: req.params.gameID, gameSlug: game.gameSlug });
     });
 });
 
-app.post('/quest/add/:gameID', (req, res) => {
-    Game.findOne({gameID: req.params.gameID}, (err, game) => {
+app.post('/quest/add/:gameSlug', (req, res) => {
+    Game.findOne({gameSlug: req.params.gameSlug}, (err, game) => {
         const statusBoolean = req.body.gridRadios === "success" ? true : false;
+        const questNum = +game.quests.length + 1;
 
         const newQuest = new Quest({
             numOfPlayers: req.body.numOfPlayers,
             players: req.body.players,
-            success: statusBoolean
+            success: statusBoolean,
+            questNum: 'quest' + questNum
         });
         console.log('req body', req.body);
         
@@ -346,16 +348,18 @@ app.post('/quest/add/:gameID', (req, res) => {
                 console.log(updatedGame.quests);
             }
         });
-        res.redirect('/game/play/' + req.params.gameID);
+        res.redirect('/game/play/' + req.params.gameSlug);
     });
 });
 
-app.get('/quest/:gameID/:questID', (req, res) => {
-    Game.findOne({ gameID: req.params.gameID }, (err, game) => {        
+app.get('/quest/:gameSlug/:questNum', (req, res) => {
+    Game.findOne({ gameSlug: req.params.gameSlug }, (err, game) => {    
+        console.log(req.params.questNum);
+        
         // const context = { quest: game.quests.filter(quest => quest._id === req.params.questID)};
         const context = {};
-        for (let i = 0; i < game.quests.length; i++) {
-            if (game.quests[i]._id.toString() === req.params.questID) {
+        for (let i = 0; i < game.quests.length; i++) {            
+            if (game.quests[i].questNum === req.params.questNum) {
                 context.players = game.quests[i].players;
                 context.playersLength = game.quests[i].players.length;                
                 context.success = game.quests[i].success;
@@ -391,8 +395,8 @@ io.on('connection', (socket) => {
     socket.on('playScreenLoaded', (gameID) => {
         
         Game.findOne({ gameID: gameID }, (err, game) => {
-            socket.emit('showQuests', { quests: game.quests, gameID: gameID });
-            socket.broadcast.emit('showQuests', { quests: game.quests, gameID: gameID });
+            socket.emit('showQuests', { quests: game.quests, gameSlug: game.gameSlug });
+            socket.broadcast.emit('showQuests', { quests: game.quests, gameSlug: game.gameSlug });
         });
     });
 });
