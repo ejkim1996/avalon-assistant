@@ -1,26 +1,32 @@
+// express setup
 const express = require('express');
+const session = require('express-session');
+const app = express();
+const path = require('path');
 
-const mongoose = require('mongoose');
-// const validate = require('validate.js');
+// passport setup
 const passport = require('passport');
-const shuffle = require('shuffle-array');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
+// get mongoose models
 require('./db');
+const mongoose = require('mongoose');
 const Quest = mongoose.model('Quest');
 const Game = mongoose.model('Game');
 const User = mongoose.model('User');
 const Character = mongoose.model('Character');
 
-const session = require('express-session');
-const path = require('path');
+// shuffle setup
+const shuffle = require('shuffle-array');
 
-const app = express();
+// socket.io setup
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+// handlebars setup
 app.set('view engine', 'hbs');
 
+// middleware setup
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
@@ -35,10 +41,11 @@ app.use((req, res, next) => {
     res.locals.user = req.user;
     next();
 });
+
+// set up passport login state support
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
-
 passport.deserializeUser(function (user, done) {
     done(null, user);
 });
@@ -53,29 +60,18 @@ passport.use(new GoogleStrategy({
     callbackURL: process.env.CALLBACK_URL
 },
     function (accessToken, refreshToken, profile, done) {
-        // User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        //     return done(err, user);
-        // });
-
         User.findOne({ googleID: profile.id }, function (err, user) {
             if (!user) {
-                // make a new google profile without key start with $
-                // const newProfile = {};
-                // newProfile.id = profile.id;
-                // newProfile.displayName = profile.displayName;
-                // newProfile.emails = profile.emails;
                 user = new User({
                     name: profile.displayName,
                     googleID: profile.id,
-                    // email: profile.emails[0],
                     provider: 'google'
-                    // google: newProfile/* ._json */
                 });
-                user.save(function (err, savedUser) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    console.log(savedUser);
+                user.save(function (err /* savedUser */) {
+                    // if (err) {
+                    //     console.log(err);
+                    // }
+                    // console.log(savedUser);
 
                     return done(err, user);
                 });
@@ -83,32 +79,6 @@ passport.use(new GoogleStrategy({
                 return done(err, user);
             }
         });
-
-        // User.findOne({
-        //     googleId: profile.id
-        // }, function (err, user) {
-        //     if (err) {
-        //         return done(err);
-        //     }
-        //     //No user was found... so create a new user with values from Google (all the profile. stuff)
-        //     if (!user) {
-        //         user = new User({
-        //             name: profile.displayName,
-        //             email: profile.emails[0].value,
-        //             username: profile.username,
-        //             provider: 'facebook',
-        //             //now in the future searching on User.findOne({'facebook.id': profile.id } will match because of this next line
-        //             facebook: profile._json
-        //         });
-        //         user.save(function (err) {
-        //             if (err) console.log(err);
-        //             return done(err, user);
-        //         });
-        //     } else {
-        //         //found user. Return
-        //         return done(err, user);
-        //     }
-        // });
     }
 ));
 
@@ -131,11 +101,14 @@ app.get('/auth/google/callback',
         res.redirect('/');
     });
 
-
-app.get('/', (req, res) => {    
+// GET /
+//   Home page
+app.get('/', (req, res) => {
     res.render('index');
 });
 
+// GET /game/create
+//   Page to create a game by choosing game name and characters
 app.get('/game/create', (req, res) => {
     if (req.user === undefined) {
         res.redirect('/login');
@@ -146,6 +119,9 @@ app.get('/game/create', (req, res) => {
     }
 });
 
+// POST /game/create
+//   Get form data to create a game
+//   and send player to the lobby
 app.post('/game/create', (req, res) => {
     let characters = req.body.characters;
     const gameID = req.body.gameID;
@@ -166,158 +142,61 @@ app.post('/game/create', (req, res) => {
         gameID: gameID,
         players: [{
             name: req.user.name,
-            character: characters.pop()
+            character: characters.pop() // assign character to game creator
         }],
         characters: characters,
         quests: []
     });
 
-
     newGame.save((err, savedGame) => {
         if (err) {
-            console.log(err);
+            // console.log(err);
+            res.redirect('/game/create');
         } else {
-            // req.locals.gameID = ""+savedGame._id.slice(0, 5);
-            // savedGame.gameID = req.locals.gameID;
-            // savedGame.save((err, savedGameWithID) => {
-            //     if (err) {
-            //         console.log(err);
-            //     } else {
-            //         console.log(savedGameWithID);
-            //         res.render('host');                    
-            //     }
-            // });
             console.log(savedGame);
-
-            res.redirect('/game/host/' + gameID);
-
+            res.redirect('/game/lobby/' + savedGame.gameSlug);
         }
     });
-
-    // const GameSchema = new mongoose.Schema({
-    //     players: [{
-    //         name: { type: String, required: true },
-    //         character: { type: String, required: true }
-    //     }],
-    //     quests: [QuestSchema]
-    // });
-
-    // Game.find({}, (err, games) => {
-    //     const statusBoolean = req.body.gridRadios === "success" ? true : false;
-
-    //     const newQuest = new Quest({
-    //         numOfPlayers: req.body.numOfPlayers,
-    //         players: req.body.players,
-    //         success: statusBoolean
-    //     });
-    //     games[0].quests.push(newQuest);
-    //     games[0].save((err, updatedGame) => {
-    //         if (err) {
-    //             console.log(err);
-
-    //         }
-    //         if (!err) {
-    //             console.log(updatedGame.quests);
-    //         }
-    //     });
-    //     res.redirect('/game/play');
-    // });
 });
 
+// GET /game/join
+//   Page where players can join games by game ID (name)
 app.get('/game/join', (req, res) => {
-    res.render('join');
+    if (req.user === undefined) {
+        res.redirect('/login');
+    } else {
+        res.render('join');
+    }
 });
 
+// POST /game/join
+//   Get game ID input from form to send 
+//   player to the correct lobby.
 app.post('/game/join', (req, res) => {
-    const gameID = req.body.gameID;
-    const query = {
-        gameID: gameID
-    };
-    Game.findOne(query, (err, game) => {
+    Game.findOne({ gameID: req.body.gameID }, (err, game) => {
         if (!err) {
             if (game) {
-                res.redirect('/game/host/' + gameID);
-                // res.render('lobby', { players: game.players });
-
+                const gameSlug = req.body.gameID.replace(/\s+/g, '-').toLowerCase();
+                res.redirect('/game/lobby/' + gameSlug);
             } else {
                 res.redirect('/game/join');
             }
         } else {
             console.log(err);
-            // res.redirect('/');
+            res.redirect('/game/join');
         }
     });
-    // Game.find({}, (err, games) => {
-    //     if (err) {
-    //         console.log(err);
-    //     } else {
-    //         games = games.filter((game) => {
-    //             return game.id.includes(gameID);
-    //         });
-    //         let hostPath = '/game/host/';
-    //         hostPath = hostPath.concat(games[0]);
-    //         res.redirect(hostPath);
-    //     }
-    // });
 });
 
-app.get('/game/play', (req, res) => {
-    Game.find({}, (err, games) => {
-        res.render('playtest', { quests: games[0].quests });
-    });
-});
-
-app.get('/game/play/:gameID', (req, res) => {
+// GET /game/lobby/:gameSlug
+//   
+app.get('/game/lobby/:gameSlug', (req, res) => {
     if (req.user === undefined) {
         res.redirect('/login');
     } else {
-        const gameID = req.params.gameID;
-        const name = req.user.name;
+        const gameSlug = req.params.gameSlug;
 
-        const query = {
-            gameID: gameID
-        };
-        
-        Game.findOne(query, (err, game) => {
-            const context = {};
-            game.players.forEach(player => {
-                if (player.name === name) {
-                    Character.findOne({name: player.character}, (err, character) => {
-                        context.character = character;
-                        context.quests = game.quests;
-                        context.knowledge = [];
-                        context.gameID = gameID;
-                        
-                        game.players.forEach(player => {
-                            if (character.knowledge.includes(player.character)) {
-                                context.knowledge.push(player.name);
-                            }
-                        });
-                        
-                        // character.knowledge.forEach(otherChar => {
-                            
-                        // });
-                        res.render('play', context);
-                    });
-                }
-            });
-        });
-    }
-});
-
-app.get('/game/host/:gameID', (req, res) => {
-    if (req.user === undefined) {
-        res.redirect('/login');
-    } else {
-        const gameID = req.params.gameID;
-
-        const query = {
-            gameID: gameID
-        };
-
-
-
-        Game.findOne(query, (err, game) => {
+        Game.findOne({gameSlug: gameSlug}, (err, game) => {
             if (!err) {
                 // console.log(game);
                 let playerExists = false;
@@ -325,11 +204,6 @@ app.get('/game/host/:gameID', (req, res) => {
                     if (player.name === req.user.name) {
                         playerExists = true;
                     }
-                    // Object.keys(player).forEach(function (key) {
-                    //     if (player[key] === req.user) {
-                    //         alert('exists');
-                    //     }
-                    // });
                 });
 
                 if (!playerExists) {
@@ -338,7 +212,7 @@ app.get('/game/host/:gameID', (req, res) => {
 
                 game.save();
 
-                res.render('lobby', { gameID: gameID }/* , { players: game.players } */);
+                res.render('lobby', { gameID: game.gameID }/* , { players: game.players } */);
                 // res.render('lobby', { players: game.players });
 
             } else {
@@ -355,14 +229,14 @@ app.get('/game/host/:gameID', (req, res) => {
 
 });
 
-app.post('/game/host/:gameID', (req, res) => {
+app.post('/game/lobby/:gameSlug', (req, res) => {
     if (req.user === undefined) {
         res.redirect('/login');
     } else {
         const query = {
             gameID: req.params.gameID
         };
-        Game.findOne(query, (err, game) => {
+        Game.findOne({gameSlug: req.params.gameSlug}, (err, game) => {
             if (!err) {
                 res.render('lobby', { players: game.players });
             } else {
@@ -374,13 +248,49 @@ app.post('/game/host/:gameID', (req, res) => {
 
 });
 
-app.get('/debug', (req, res) => {
+/* 
+app.get('/game/play', (req, res) => {
     Game.find({}, (err, games) => {
-        console.log(games[0].quests);
-        res.redirect('/');
+        res.render('playtest', { quests: games[0].quests });
     });
 });
+ */
 
+app.get('/game/play/:gameSlug', (req, res) => {
+    if (req.user === undefined) {
+        res.redirect('/login');
+    } else {
+        const gameID = req.params.gameID;
+        const name = req.user.name;
+
+        const query = {
+            gameID: gameID
+        };
+
+        Game.findOne({gameSlug: req.params.gameSlug}, (err, game) => {
+            const context = {};
+            game.players.forEach(player => {
+                if (player.name === name) {
+                    Character.findOne({ name: player.character }, (err, character) => {
+                        context.character = character;
+                        context.quests = game.quests;
+                        context.knowledge = [];
+                        context.gameID = game.gameID;
+
+                        game.players.forEach(player => {
+                            if (character.knowledge.includes(player.character)) {
+                                context.knowledge.push(player.name);
+                            }
+                        });
+                        res.render('play', context);
+                    });
+                }
+            });
+        });
+    }
+});
+
+/* 
 app.get('/quest/add', (req, res) => {
     Game.find({}, (err, games) => {
         res.render('quest-add', { players: games[0].players });
@@ -408,14 +318,60 @@ app.post('/quest/add', (req, res) => {
         res.redirect('/game/play');
     });
 });
+ */
+
+app.get('/quest/add/:gameID', (req, res) => {
+    Game.findOne({gameID: req.params.gameID}, (err, game) => {
+        res.render('quest-add', { players: game.players, gameID: req.params.gameID });
+    });
+});
+
+app.post('/quest/add/:gameID', (req, res) => {
+    Game.findOne({gameID: req.params.gameID}, (err, game) => {
+        const statusBoolean = req.body.gridRadios === "success" ? true : false;
+
+        const newQuest = new Quest({
+            numOfPlayers: req.body.numOfPlayers,
+            players: req.body.players,
+            success: statusBoolean
+        });
+        console.log('req body', req.body);
+        
+        game.quests.push(newQuest);
+        game.save((err, updatedGame) => {
+            if (err) {
+                console.log(err);
+            }
+            if (!err) {
+                console.log(updatedGame.quests);
+            }
+        });
+        res.redirect('/game/play/' + req.params.gameID);
+    });
+});
+
+app.get('/quest/:gameID/:questID', (req, res) => {
+    Game.findOne({ gameID: req.params.gameID }, (err, game) => {        
+        // const context = { quest: game.quests.filter(quest => quest._id === req.params.questID)};
+        const context = {};
+        for (let i = 0; i < game.quests.length; i++) {
+            if (game.quests[i]._id.toString() === req.params.questID) {
+                context.players = game.quests[i].players;
+                context.playersLength = game.quests[i].players.length;                
+                context.success = game.quests[i].success;
+                context.questNumber = i + 1;
+            }
+        }
+        context.gameID = game.gameID;
+        // console.log(context);
+        
+        res.render('quest-detail', context);
+    });
+});
 
 app.get('/login', (req, res) => {
     res.render('login');
 });
-
-// app.post('/login', (req, res) => {
-
-// });
 
 io.on('connection', (socket) => {
     console.log(socket.id, 'has connected');
@@ -433,9 +389,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('playScreenLoaded', (gameID) => {
+        
         Game.findOne({ gameID: gameID }, (err, game) => {
-            socket.emit('showQuests', game.quests);
-            socket.broadcast.emit('showQuests', game.quests);
+            socket.emit('showQuests', { quests: game.quests, gameID: gameID });
+            socket.broadcast.emit('showQuests', { quests: game.quests, gameID: gameID });
         });
     });
 });

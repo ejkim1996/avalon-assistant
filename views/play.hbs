@@ -7,15 +7,18 @@
     <div class="col-sm-6 ml-auto">
         <div class="card text-center text-white bg-dark mb-3 w-100">
             <div class="card-body">
-                <h3 class="card-title">Details</h3>
+                <h2 class="card-title">{{character.name}}</h2>
                 <h6 class="card-title gameID">{{gameID}}</h6>
 
                 <div class="card-text text-left">
-                    Character: {{character.name}}
-                    <br>
-                    Description: {{character.description}}
-                    <br>
-                    Knowledge: {{knowledge}}
+                    <h5>Description</h5>
+                    <p>{{character.description}}</p>
+                    <h5>Knowledge</h5>
+                    {{#each knowledge}}
+                    <h3 class="float-left m-1">
+                        <span class="badge badge-light font-weight-light p-2">{{this}}</span>
+                    </h3>
+                    {{/each}}
                 </div>
 
             </div>

@@ -16,13 +16,19 @@
 
 <body>
 	<header>
-		<nav class="navbar navbar-dark bg-dark nav-pills nav-justified">
-			<span class="navbar-brand mb-0 h1 nav-item nav-link">
-				<h1>AVALON ASSISTANT</h1>
+		<nav class="navbar navbar-dark m-0 p-0 pt-3 bg-dark nav-pills nav-justified">
+			<span class="navbar-nav navbar-brand m-0 p-0 h1 nav-item nav-link">
+				<h1 class="font-weight-bold"><a class="nav-link" href="/" style="color: white;">AVALON ASSISTANT</a></h1>
 			</span>
 		</nav>
+		<div  class="navbar navbar-dark  m-0 p-0 pb-2 bg-dark nav-pills nav-justified">
+			<span class="navbar-brand m-0 p-0 h6 nav-item nav-link">
+				{{#if user}}
+					<h6 class="font-weight-light">Logged in as: {{ user.name }}</h6> 
+				{{/if}}
+			</span>
+		</div>
 	</header>
-	 {{#if user}} Logged in as: {{ user.name }} {{/if}}
 	
 	<div id="content">
 		{{{ body }}}

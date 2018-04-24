@@ -9,10 +9,10 @@ socket.on('showPlayers', (data) => {
     lobbyParent.append(lobby);
     data.forEach(player => {
         const h3 = document.createElement('h3');
-        h3.classList.add('float-left', 'm-1');
+        h3.classList.add('d-inline-block', 'm-1');
 
         const span = document.createElement('span');
-        span.classList.add('badge', 'badge-pill', 'badge-primary', 'bg-secondary', 'font-weight-light', 'p-2');
+        span.classList.add('badge', 'badge-light', 'font-weight-light', 'p-2');
         span.textContent = player.name;
         h3.append(span);
         lobby.append(h3);
@@ -26,7 +26,7 @@ socket.on('startGame', (data) => {
 function handlePlayBtnClick(evt) {
     evt.preventDefault();
     const gameID = document.querySelector('.gameID');    
-    socket.emit('playBtnPressed', gameID.textContent);
+    socket.emit('playBtnPressed', gameID.textContent.replace(/\s+/g, '-').toLowerCase());
 }
 
 function main() {

@@ -1,9 +1,10 @@
-<div class="card text-center text-white bg-dark mb-3 w-100" style="width: 18rem;">
+<div class="card text-center text-white bg-dark mb-3" style="width: 20rem; margin: 0 auto;">
     <div class="card-body">
         <h3 class="card-title">Add a Quest</h3>
+        <h5 class="gameID">{{gameID}}</h5>        
         <form method="POST">
-            <div class="form-group row">
-                <label class="col-sm-6 col-form-label" for="numberOfPlayers">Number of Players</label>
+            <div class="form-group row ml-auto">
+                <label class="col-sm-6 col-form-label" for="numberOfPlayers"># of Players</label>
                 <div class="col-sm-4">
                     <select class="form-control" id="numberOfPlayers" name="numOfPlayers">
                         <option>2</option>
@@ -15,13 +16,18 @@
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-6">Players</div>
-                <div class="col-sm-6 text-left">
+                <div class="col-sm-6 ml-auto">Players</div>
+                <div class="col-sm-6 text-left ml-auto">
                     {{#each players}}
-                    <div class="form-check">
+                    {{!-- <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="gridCheck{{@index}}" name="players" value="{{name}}">
                         <label class="form-check-label" for="gridCheck{{@index}}">
                             {{name}}
+                        </label>
+                    </div> --}}
+                    <div class="btn-group-toggle mb-1" data-toggle="buttons">
+                        <label class="btn btn-outline-light">
+                            <input type="checkbox" autocomplete="off" name="players" value="{{name}}"> {{name}}
                         </label>
                     </div>
                     {{/each}}
@@ -29,9 +35,17 @@
             </div>
             <fieldset class="form-group">
                 <div class="row">
-                    <legend class="col-form-label col-sm-6 pt-0">Result</legend>
-                    <div class="col-sm-6 text-left">
-                        <div class="form-check">
+                    <legend class="col-form-label col-sm-12 pt-0">Result</legend>
+                    <div class="col-sm-12">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-outline-light">
+                                <input type="radio" name="gridRadios" id="gridRadios1" autocomplete="off" value="success"> Success
+                            </label>
+                            <label class="btn btn-outline-light">
+                                <input type="radio" name="gridRadios" id="gridRadios2" autocomplete="off" value="fail"> Failure
+                            </label>
+                        </div>
+                        {{!-- <div class="form-check">
                             <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="success">
                             <label class="form-check-label" for="gridRadios1">
                                 Success
@@ -42,7 +56,7 @@
                             <label class="form-check-label" for="gridRadios2">
                                 Fail
                             </label>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </fieldset>
@@ -51,6 +65,9 @@
             <button type="submit" class="btn btn-light">
                 Add
             </button>
+            <a class="btn btn-light" href="/game/play/{{gameID}}" role="button">
+                Back to Game
+            </a>
         </form>
     </div>
 </div>

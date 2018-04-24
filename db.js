@@ -1,5 +1,5 @@
-// 1ST DRAFT DATA MODEL
 const mongoose = require('mongoose');
+const URLSlugs = require('mongoose-url-slugs');
 
 // users
 // * our site requires authentication...
@@ -49,6 +49,8 @@ const GameSchema = new mongoose.Schema({
     characters: [{ type: String, required: true }],
     quests: [QuestSchema]
 });
+
+GameSchema.plugin(URLSlugs('gameID', { field: 'gameSlug' }));
 
 mongoose.model('User', UserSchema);
 mongoose.model('Quest', QuestSchema);

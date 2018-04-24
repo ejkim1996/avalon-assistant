@@ -1,0 +1,40 @@
+<div class="card text-center text-white bg-dark mb-3" style="width: 20rem; margin: 0 auto;">
+    <div class="card-body">
+        <h3 class="card-title">Quest {{questNumber}} Details</h3>
+        <h5 class="gameID">{{gameID}}</h5>
+        <div class="row">
+            <div class="col-sm-6 ml-auto text-right"># of Players</div>
+            <div class="col-sm-6 ml-auto text-left">{{playersLength}}</div>            
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-6 ml-auto text-right mt-3">Players</div>
+            <div class="col-sm-6 ml-auto text-left">
+                <p class="lead">
+                    {{#each players}}
+                    <h5 class="mb-1">
+                        <span class="badge badge-light font-weight-light p-2">{{this}}</span>
+                    </h5>
+                    {{/each}}
+                </p>
+            </div>
+        </div>
+        <br>
+
+        <div class="row mb-3">
+            <div class="col-sm-6 ml-auto text-right">Result</div>
+            
+            {{#if success}}
+                <div class="col-sm-6 ml-auto text-left">Success</div>
+            {{else}}
+                <div class="col-sm-6 ml-auto text-left">Failed</div>
+            {{/if}}
+
+
+        </div>
+        
+        <a class="btn btn-light" href="/game/play/{{gameID}}" role="button">
+            Back to Game
+        </a>
+    </div>
+</div>

@@ -5,17 +5,17 @@
     <div class="card-body">
         <h3 class="card-title gameID">{{gameID}}</h3>
         <div class="row">
-            <div class="col-sm-1 ml-auto"></div>
-            <div class="col-sm-10 ml-auto lobby-parent">
+            {{!-- <div class="col-sm-1 ml-auto"></div> --}}
+            <div class="col-sm-12 ml-auto lobby-parent">
                 <p class="lead text-center lobby">
-                    {{#each players}}
+                    {{!-- {{#each players}}
                     <h3 class="float-left m-1">
-                        <span class="badge badge-pill badge-primary bg-secondary font-weight-light p-2">{{name}}</span>
+                        <span class="badge badge-light font-weight-light p-2">{{name}}</span>
                     </h3>
-                    {{/each}}
+                    {{/each}} --}}
                 </p>
             </div>
-            <div class="col-sm-1 ml-auto"></div>
+            {{!-- <div class="col-sm-1 ml-auto"></div> --}}
         </div>
         <br>
         <button type="submit" class="btn btn-light">

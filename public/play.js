@@ -1,6 +1,20 @@
 const socket = io();
 
-socket.on('showQuests', (quests) => {
+function handleQuestCircleClick(gameID, questID) {
+    if (questID === undefined) {
+        return function() {
+            window.location.href = '/quest/add/' + gameID;
+        };
+    } else {
+        return function () {
+            window.location.href = '/quest/' + gameID + '/' + questID;
+        };
+    }
+}
+
+socket.on('showQuests', (questsAndGameID) => {
+    const quests = questsAndGameID.quests;
+    const gameID = questsAndGameID.gameID;
     console.log(quests[0]);
     const cardBody = document.querySelector('.quests-parent');
     let questsDiv = document.querySelector('.quests');
@@ -14,7 +28,9 @@ socket.on('showQuests', (quests) => {
     for (let i = 0; i < 5; i++) {
         console.log('for loop');
         
+        // const anchor = document.createElement('a');
         const questContainer = document.createElement('i');
+        // questContainer.append(anchor);        
         questContainer.classList.add('hovicon', 'effect-9', 'd-block', 'mx-auto', 'my-0', 'mb-3');
         if (quests[i]) {
             console.log('quest exists');
@@ -23,18 +39,28 @@ socket.on('showQuests', (quests) => {
                 console.log('quest success');
                 
                 questContainer.classList.add('sub-a');
+                // anchor.href = '/quest/' + quests[i]._id;
                 questContainer.textContent = 'S';
+                questContainer.addEventListener('click', handleQuestCircleClick(gameID, quests[i]._id));
                 completedQuests.append(questContainer);
                 // <i class="hovicon effect-9 sub-a d-block mb-3" style="margin: 0 auto;">S</i>                
             } else {
                 console.log('quest fail');
                 
                 questContainer.classList.add('sub-b');                
+                // anchor.href = '/quest/' + quests[i]._id;
                 questContainer.textContent = 'F';
+                questContainer.addEventListener('click', handleQuestCircleClick(gameID, quests[i]._id));                
                 completedQuests.append(questContainer);                
             }
         } else {
-            emptyQuests.append(questContainer);
+            const plusContainer = document.createElement('div');
+            plusContainer.classList.add('hovicon', 'effect-9', 'd-block', 'mx-auto', 'my-0', 'mb-3', 'font-weight-bold');
+            plusContainer.addEventListener('click', handleQuestCircleClick(gameID));            
+            plusContainer.textContent = '+'; 
+            plusContainer.style.lineHeight = 110 + 'px';         
+            emptyQuests.append(plusContainer);
+            break;
         }
     }
     questsDiv.append(completedQuests);
@@ -53,7 +79,7 @@ socket.on('showQuests', (quests) => {
 // }
 
 function main() {
-    const gameID = document.querySelector('.gameID');
+    const gameID = document.querySelector('.gameID');    
     socket.emit('playScreenLoaded', gameID.textContent);
 
     // const playBtn = document.querySelector('button');
