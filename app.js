@@ -151,7 +151,9 @@ app.post('/game/create', (req, res) => {
     newGame.save((err, savedGame) => {
         if (err) {
             // console.log(err);
-            res.redirect('/game/create');
+            Character.find({}, (err, characters) => {
+                res.render('create', { characters: characters, error: 'Game ID already exists.' });
+            });
         } else {
             console.log(savedGame);
             res.redirect('/game/lobby/' + savedGame.gameSlug);
@@ -242,13 +244,13 @@ app.get('/game/play/:gameSlug', (req, res) => {
                     const player = game.players.filter(player => player.name === req.user.name)[0];
                     context.quests = game.quests;
                     context.gameID = game.gameID;
-                    
+
                     // Get the names of players who are playing characters
                     // that you need knowledge of
                     Character.findOne({ name: player.character }, (err, character) => {
                         context.knowledge = [];
                         context.character = character;
-                        
+
                         game.players.forEach(player => {
                             if (character.knowledge.includes(player.character)) {
                                 context.knowledge.push(player.name);
@@ -323,7 +325,7 @@ app.post('/quest/add/:gameSlug', (req, res) => {
                     res.redirect('/quest/add/' + req.params.gameSlug);
                 }
             } else {
-                res.redirect('/quest/add/' + req.params.gameSlug);                
+                res.redirect('/quest/add/' + req.params.gameSlug);
             }
         });
     }
@@ -365,8 +367,15 @@ app.get('/quest/:gameSlug/:questNum', (req, res) => {
 
 // GET /login
 //   Render login page
-app.get('/login', (req, res) => {
+app.get('/login', function (req, res) {
     res.render('login');
+});
+
+// GET /logout
+//   Let users log out
+app.get('/logout', function (req, res) {
+    req.logout();
+    res.redirect('/');
 });
 
 // Socket.io events
@@ -386,7 +395,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('playScreenLoaded', (gameID) => {
-
         Game.findOne({ gameID: gameID }, (err, game) => {
             socket.emit('showQuests', { quests: game.quests, gameSlug: game.gameSlug });
             socket.broadcast.emit('showQuests', { quests: game.quests, gameSlug: game.gameSlug });

@@ -1,34 +1,43 @@
 <div class="card text-center text-white bg-dark mb-3" style="width: 20rem; margin: 0 auto;">
     <div class="card-body">
-    {{!-- <a class="btn btn-outline-dark btn-lg btn-block" href="/game/host" role="button">
-        Create Game
-    </a>
-
-    <a class="btn btn-outline-dark btn-lg btn-block" href="/game/join" role="button">
-        Join Game
-    </a> --}}
-
-    {{#if user}}
-    {{else}}
-        <a class="btn btn-light btn-lg btn-block" href="/login" role="button">
-            Log In
+        {{!--
+        <a class="btn btn-outline-dark btn-lg btn-block" href="/game/host" role="button">
+            Create Game
         </a>
-    {{/if}}
 
-    {{!-- <a class="btn btn-light btn-lg btn-block" href="/quest/add" role="button">
-        Add Quest
-    </a>
+        <a class="btn btn-outline-dark btn-lg btn-block" href="/game/join" role="button">
+            Join Game
+        </a> --}}
+        <p class="card-text text-left">
+            Avalon Assistant is a web app that will allow a group of players to create a session that assigns characters and gives select
+            characters the information they need. It will also let users minimally keep track of the quest progression (successes/fails)
+            and the people who went on each quest.
+        </p>
 
-    <a class="btn btn-light btn-lg btn-block" href="/game/play" role="button">
-        Play Game
-    </a> --}}
+        {{#if user}}
+        <a class="btn btn-light btn-lg btn-block" href="/game/create" role="button">
+            Create Game
+        </a>
 
-    <a class="btn btn-light btn-lg btn-block" href="/game/create" role="button">
-        Create Game
-    </a>
+        <a class="btn btn-light btn-lg btn-block" href="/game/join" role="button">
+            Join Game
+        </a>
+        {{else}}
+        <p class="card-text text-center">
+            Log in to use Avalon Assistant:
+        </p>
+        <a class="btn btn-light btn-lg btn-block" href="/auth/google" role="button">
+            Sign in with Google
+        </a>
+        {{/if}} {{!--
+        <a class="btn btn-light btn-lg btn-block" href="/quest/add" role="button">
+            Add Quest
+        </a>
 
-    <a class="btn btn-light btn-lg btn-block" href="/game/join" role="button">
-        Join Game
-    </a>
+        <a class="btn btn-light btn-lg btn-block" href="/game/play" role="button">
+            Play Game
+        </a> --}}
+
+
     </div>
 </div>

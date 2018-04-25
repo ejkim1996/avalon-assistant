@@ -25,7 +25,7 @@ socket.on('startGame', (data) => {
 
 function handlePlayBtnClick(evt) {
     evt.preventDefault();
-    const gameID = document.querySelector('.gameID');    
+    const gameID = document.querySelector('.gameID');
     socket.emit('playBtnPressed', gameID.textContent.replace(/\s+/g, '-').toLowerCase());
 }
 

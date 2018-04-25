@@ -1,55 +1,15 @@
 (function () {
     // These are the constraints used to validate the form
     const constraints = {
-        gameID: {
-            //gameID is required
-            presence: true
-        },
-        characters: {
-            presence: true,
-            length: {
-                minimum: 1
+        numberOfCharacters: {
+            numericality: {
+                onlyInteger: true,
+                equalTo: 2,
             }
+        },
+        result: {
+            presence: true
         }
-        // numChars: {
-        //     numericality: {
-        //         onlyInteger: true,
-        //         greaterThan: 5,
-        //         lessThanOrEqualTo: 10,
-        //     }
-        // },
-        // duration: {
-        //     numericality: {
-        //         onlyInteger: true,
-        //         greaterThan: 0,
-        //         lessThanOrEqualTo: 30,
-        //         even: true,
-        //         notEven: "must be evenly divisible by two"
-        //     }
-        // },
-        // email: {
-        //     // Email is required
-        //     presence: true,
-        //     // and must be an email (duh)
-        //     email: true
-        // },
-        // password: {
-        //     // Password is also required
-        //     presence: true,
-        //     // And must be at least 5 characters long
-        //     length: {
-        //         minimum: 5
-        //     }
-        // },
-        // "confirm-password": {
-        //     // You need to confirm your password
-        //     presence: true,
-        //     // and it needs to be equal to the other password
-        //     equality: {
-        //         attribute: "password",
-        //         message: "^The passwords does not match"
-        //     }
-        // }
     };
 
     // Recusively finds the closest parent that has the specified class
@@ -72,9 +32,6 @@
         formGroup.querySelectorAll(".help-block.error").forEach(el => {
             el.parentNode.removeChild(el);
         });
-        // _.each(formGroup.querySelectorAll(".help-block.error"), function (el) {
-        //     el.parentNode.removeChild(el);
-        // });
     }
 
     // Adds the specified error with the following markup
@@ -84,13 +41,8 @@
         block.classList.add("help-block");
         block.classList.add("error");
         block.innerText = error;
-        
-        messages.appendChild(block);
-    }
 
-    function showSuccess() {
-        // We made it \:D/
-        alert("Success!");
+        messages.appendChild(block);
     }
 
     // Shows the errors for a specific input
@@ -118,6 +70,15 @@
         }
     }
 
+    function addNumCharsToForm(form) {
+        let numChars = 0;
+        const playerBtnDiv = document.querySelector('.playerBtn');
+        numChars = numChars + playerBtnDiv.querySelectorAll('.active').length;
+        const numCharsInput = form.querySelector('#numberOfCharacters');
+
+        numCharsInput.value = numChars;
+    }
+
     // Hook up the form so we can prevent it from being posted
     const form = document.querySelector("form");
 
@@ -126,36 +87,36 @@
     // Updates the inputs with the validation errors
     function showErrors(form, errors) {
         console.log(form.querySelectorAll("input[name], select[name]"));
-        
+
+        // // We loop through all the inputs and show the errors for that input
         form.querySelectorAll("input[name], select[name]").forEach(input => {
             showErrorsForInput(input, errors && errors[input.name]);
-            
         });
-        // // We loop through all the inputs and show the errors for that input
-        // _.each(form.querySelectorAll("input[name], select[name]"), function (input) {
-        //     // Since the errors can be null if no errors were found we need to handle
-        //     // that
-        //     showErrorsForInput(input, errors && errors[input.name]);
-        // });
     }
-    
+
     function handleFormSubmit(form, input) {
         // validate the form against the constraints
         const errors = validate(form, constraints);
         console.log(errors);
-        
+
         // then we update the form to reflect the results
         showErrors(form, errors || {});
         if (!errors) {
-            showSuccess();
+            form.submit();
         }
+    }
+
+    function updateConstraint() {
+        constraints.numberOfCharacters.numericality.equalTo = +form.querySelector('#numberOfPlayers').value;
     }
 
     form.addEventListener("submit", function (ev) {
         ev.preventDefault();
+        addNumCharsToForm(form);
+        updateConstraint();
         handleFormSubmit(form);
     });
-
+    
     // Hook up the inputs to validate on the fly
     for (let i = 0; i < inputs.length; ++i) {
         inputs.item(i).addEventListener("change", function (/* ev */) {
@@ -163,20 +124,4 @@
             showErrorsForInput(this, errors[this.name]);
         });
     }
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 })();

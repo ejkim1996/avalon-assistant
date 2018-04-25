@@ -24,7 +24,9 @@
 		<div  class="navbar navbar-dark  m-0 p-0 pb-2 bg-dark nav-pills nav-justified">
 			<span class="navbar-brand m-0 p-0 h6 nav-item nav-link">
 				{{#if user}}
-					<h6 class="font-weight-light">Logged in as: {{ user.name }}</h6> 
+					<h6 class="font-weight-light d-inline-block">Logged in as: {{ user.name }}</h6>
+					<a class="btn btn-outline-light btn-sm" href="/logout" role="button">Log out</a>
+					
 				{{/if}}
 			</span>
 		</div>
