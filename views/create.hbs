@@ -34,6 +34,11 @@
                 </div>
                 <div class="col-sm-4"></div> --}}
                 <div class="col-sm-12">
+                    <div class="btn-group-toggle d-inline-block mb-1" {{!-- data-toggle="buttons" --}}>
+                        <label class="btn btn-outline-light active">
+                            <input type="checkbox" autocomplete="off" name="characters" value="Merlin"> Merlin
+                        </label>
+                    </div>
                     {{#each characters}} {{#if select}} {{else}}
                     <div class="btn-group-toggle d-inline-block mb-1" data-toggle="buttons">
                         <label class="btn btn-outline-light">

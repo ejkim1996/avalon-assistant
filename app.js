@@ -114,6 +114,7 @@ app.get('/game/create', (req, res) => {
         res.redirect('/login');
     } else {
         Character.find({}, (err, characters) => {
+            characters = characters.filter(character => character.name !== 'Merlin');
             res.render('create', { characters: characters });
         });
     }
@@ -150,8 +151,8 @@ app.post('/game/create', (req, res) => {
 
     newGame.save((err, savedGame) => {
         if (err) {
-            // console.log(err);
             Character.find({}, (err, characters) => {
+                characters = characters.filter(character => character.name !== 'Merlin');                
                 res.render('create', { characters: characters, error: 'Game ID already exists.' });
             });
         } else {
@@ -163,9 +164,17 @@ app.post('/game/create', (req, res) => {
 
 // GET /game/join
 //   Page where players can join games by game ID (name)
-app.get('/game/join', (req, res) => {
+app.get('/game/join', (req, res) => {    
+    const errorType = +req.query.errorType;
+    
     if (req.user === undefined) {
         res.redirect('/login');
+    } else if (errorType === 1) {
+        res.render('join', { error: 'Specified game is full.' });
+    } else if (errorType === 2) {
+        res.render('join', { error: 'You were not on the player list.\nJoin a different game.' });
+    } else if (errorType === 3) {
+        res.render('join', { error: 'Specified game does not exist.' });
     } else {
         res.render('join');
     }
@@ -181,11 +190,11 @@ app.post('/game/join', (req, res) => {
                 const gameSlug = req.body.gameID.replace(/\s+/g, '-').toLowerCase();
                 res.redirect('/game/lobby/' + gameSlug);
             } else {
-                res.redirect('/game/join');
+                res.redirect('/game/join' + '?errorType=3');
             }
         } else {
             console.log(err);
-            res.redirect('/game/join');
+            res.redirect('/game/join' + '?errorType=3');
         }
     });
 });
@@ -212,7 +221,12 @@ app.get('/game/lobby/:gameSlug', (req, res) => {
                     // if the player doesn't exist in the game,
                     // then assign a character and add the player
                     if (!playerExists) {
-                        game.players.push({ name: req.user.name, character: game.characters.pop() });
+                        // if the game is full, render 'join' with error message
+                        if (game.characters.length === 0) {
+                            res.redirect('/game/join' + '?errorType=1');
+                        } else {
+                            game.players.push({ name: req.user.name, character: game.characters.pop() });
+                        }
                     }
 
                     game.save();
@@ -242,22 +256,29 @@ app.get('/game/play/:gameSlug', (req, res) => {
                 if (game) {
                     const context = {};
                     const player = game.players.filter(player => player.name === req.user.name)[0];
-                    context.quests = game.quests;
-                    context.gameID = game.gameID;
+                    // if logged in user isn't part of the game, render with error message
+                    if (player === undefined) {
+                        res.redirect('/game/join' + '?errorType=2');
+                    } else {
+                        context.quests = game.quests;
+                        context.gameID = game.gameID;
 
-                    // Get the names of players who are playing characters
-                    // that you need knowledge of
-                    Character.findOne({ name: player.character }, (err, character) => {
-                        context.knowledge = [];
-                        context.character = character;
+                        // Get the names of players who are playing characters
+                        // that you need knowledge of
+                        Character.findOne({ name: player.character }, (err, character) => {
+                            context.knowledge = [];
+                            context.character = character;
 
-                        game.players.forEach(player => {
-                            if (character.knowledge.includes(player.character)) {
-                                context.knowledge.push(player.name);
-                            }
+                            game.players.forEach(player => {
+                                if (character.knowledge.includes(player.character)) {
+                                    context.knowledge.push(player.name);
+                                }
+                            });
+                            res.render('play', context);
                         });
-                        res.render('play', context);
-                    });
+                    }
+
+
                 } else {
                     res.redirect('/game/join');
                 }
@@ -384,8 +405,8 @@ io.on('connection', (socket) => {
 
     socket.on('newPlayerConnected', (gameID) => {
         Game.findOne({ gameID: gameID }, (err, game) => {
-            socket.emit('showPlayers', game.players);
-            socket.broadcast.emit('showPlayers', game.players);
+            socket.emit('showPlayers', { players: game.players, numChars: game.characters.length });
+            socket.broadcast.emit('showPlayers', { players: game.players, numChars: game.characters.length });
         });
     });
 
