@@ -274,7 +274,29 @@ app.get('/game/play/:gameSlug', (req, res) => {
                                     context.knowledge.push(player.name);
                                 }
                             });
-                            res.render('play', context);
+
+                            if (context.knowledge.length === 0) {
+                                context.knowledge.push('N/A');
+                            }
+
+                            Character.find({}, (err, characters) => {
+                                const charsInGame = game.players.map(player => player.character);
+                                let goodChars = characters.filter(character => {
+                                    return character.allegiance === "good" && charsInGame.includes(character.name);
+                                });
+                                let evilChars = characters.filter(character => {
+                                    return character.allegiance === "evil" && charsInGame.includes(character.name);
+                                });
+                                
+                                goodChars = goodChars.map(character => character.name);
+                                evilChars = evilChars.map(character => character.name);
+
+                                context.goodChars = goodChars;
+                                context.evilChars = evilChars;
+
+                                res.render('play', context);                                
+                            });
+                            
                         });
                     }
 
@@ -321,7 +343,7 @@ app.post('/quest/add/:gameSlug', (req, res) => {
         Game.findOne({ gameSlug: req.params.gameSlug }, (err, game) => {
             if (!err) {
                 if (game) {
-                    const statusBoolean = req.body.gridRadios === "success" ? true : false;
+                    const statusBoolean = req.body.result === "success" ? true : false;
                     const questNum = +game.quests.length + 1;
 
                     const newQuest = new Quest({
@@ -419,6 +441,23 @@ io.on('connection', (socket) => {
         Game.findOne({ gameID: gameID }, (err, game) => {
             socket.emit('showQuests', { quests: game.quests, gameSlug: game.gameSlug });
             socket.broadcast.emit('showQuests', { quests: game.quests, gameSlug: game.gameSlug });
+        });
+    });
+
+    socket.on('restartGame', (gameSlug) => {
+        Game.findOne({ gameSlug: gameSlug }, (err, game) => {
+            let charsInGame = game.players.map(player => player.character);
+            charsInGame = shuffle(charsInGame);
+            for (let i = 0; i < game.players.length; i++) {
+                game.players[i].character = charsInGame.pop();
+            }
+
+            game.quests = [];
+
+            game.save(() => {
+                socket.emit('startNewGame', gameSlug);
+                socket.broadcast.emit('startNewGame', gameSlug);
+            });
         });
     });
 });

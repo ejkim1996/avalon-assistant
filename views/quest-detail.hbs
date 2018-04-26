@@ -1,20 +1,20 @@
 <div class="card text-center text-white bg-dark mb-3" style="width: 20rem; margin: 0 auto;">
     <div class="card-body">
-        <h3 class="card-title">Quest {{questNumber}} Details</h3>
-        <h5 class="gameID">{{gameID}}</h5>
-        <div class="row">
-            <div class="col-sm-6 ml-auto text-right"># of Players</div>
-            <div class="col-sm-6 ml-auto text-left">{{playersLength}}</div>            
+        <h3 class="card-title mb-0">Quest {{questNumber}} Details</h3>
+        <h5 class="gameID mb-3">{{gameID}}</h5>
+        <div class="row mb-2">
+            <div class="col-sm-5 ml-5 text-right"># of Players</div>
+            <div class="col-sm-4 ml-0 text-left">{{playersLength}}</div>            
         </div>
         
         <div class="row">
-            <div class="col-sm-6 ml-auto text-right mt-3">Players</div>
-            <div class="col-sm-6 ml-auto text-left">
+            <div class="col-sm-12 ml-auto text-center mt-3">Players</div>
+            <div class="col-sm-12 ml-auto text-center">
                 <p class="lead">
                     {{#each players}}
-                    <h5 class="mb-1">
+                    <h4 class="mb-1 d-inline-block">
                         <span class="badge badge-light font-weight-light p-2">{{this}}</span>
-                    </h5>
+                    </h4>
                     {{/each}}
                 </p>
             </div>
@@ -22,12 +22,21 @@
         <br>
 
         <div class="row mb-3">
-            <div class="col-sm-6 ml-auto text-right">Result</div>
+            <div class="col-sm-5 ml-auto text-right mt-1">Result</div>
             
             {{#if success}}
-                <div class="col-sm-6 ml-auto text-left">Success</div>
+            
+                <div class="col-sm-6 ml-auto text-left">
+                    <h4 class="mb-1 d-inline-block">
+                        <span class="badge badge-light font-weight-light p-2">Success</span>
+                    </h4>
+                </div>
             {{else}}
-                <div class="col-sm-6 ml-auto text-left">Failed</div>
+                <div class="col-sm-6 ml-auto text-left">
+                    <h4 class="mb-1 d-inline-block">
+                        <span class="badge badge-light font-weight-light p-2">Failed</span>
+                    </h4>
+                </div>
             {{/if}}
 
 

@@ -34,6 +34,7 @@ const CharacterSchema = new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     knowledge: [{ type: String, required: true }],
+    allegiance: { type: String, required: true},
     select: Boolean
 });
 

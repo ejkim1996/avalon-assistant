@@ -12,10 +12,22 @@ function handleQuestCircleClick(gameSlug, questNum) {
     }
 }
 
+function handleRestartBtnClick(restartBtn, gameSlug) {
+    return function () {
+        restartBtn.textContent = '';
+        restartBtn.classList.toggle('d-none');        
+        socket.emit('restartGame', gameSlug);
+    };
+}
+
+socket.on('startNewGame', (gameSlug) => {
+    window.location.href = '/game/play/' + gameSlug;
+});
+
 socket.on('showQuests', (questsAndGameID) => {
     const quests = questsAndGameID.quests;
     const gameSlug = questsAndGameID.gameSlug;
-    console.log(quests[0]);
+    // console.log(quests[0]);
     const cardBody = document.querySelector('.quests-parent');
     let questsDiv = document.querySelector('.quests');
     questsDiv.remove();
@@ -25,34 +37,40 @@ socket.on('showQuests', (questsAndGameID) => {
     // completedQuests.classList.add('completed-quests');
     const emptyQuests = document.createElement('div');
     // emptyQuests.classList.add('.empty-quests');
+    let numSuccesses = 0;
+    let numFails = 0;
     for (let i = 0; i < 5; i++) {
-        console.log('for loop');
-        
-        // const anchor = document.createElement('a');
         const questContainer = document.createElement('i');
-        // questContainer.append(anchor);        
         questContainer.classList.add('hovicon', 'effect-9', 'd-block', 'mx-auto', 'my-0', 'mb-3');
         if (quests[i]) {
-            console.log('quest exists');
-            
             if (quests[i].success) {
-                console.log('quest success');
+                numSuccesses++;
                 
                 questContainer.classList.add('sub-a');
-                // anchor.href = '/quest/' + quests[i]._id;
                 questContainer.textContent = 'S';
                 questContainer.addEventListener('click', handleQuestCircleClick(gameSlug, i+1));
                 completedQuests.append(questContainer);
-                // <i class="hovicon effect-9 sub-a d-block mb-3" style="margin: 0 auto;">S</i>                
             } else {
-                console.log('quest fail');
+                numFails++;
                 
                 questContainer.classList.add('sub-b');                
-                // anchor.href = '/quest/' + quests[i]._id;
                 questContainer.textContent = 'F';
                 questContainer.addEventListener('click', handleQuestCircleClick(gameSlug, i+1));                
                 completedQuests.append(questContainer);                
             }
+            
+        } else if (numSuccesses === 3 || numFails === 3) { // add results and restart
+            const success = numSuccesses > numFails ? true : false;
+            const resultSpan = document.querySelector('.result');
+            if (success) {
+                resultSpan.textContent = 'The Side of Good Won!';
+            } else {
+                resultSpan.textContent = 'The Side of Evil Won!';
+            }
+            const restartBtn = document.querySelector('.restart');
+            restartBtn.classList.toggle('d-none');
+            restartBtn.textContent = 'Start New Game';
+            restartBtn.addEventListener('click', handleRestartBtnClick(restartBtn, gameSlug));
         } else {
             const plusContainer = document.createElement('div');
             plusContainer.classList.add('hovicon', 'effect-9', 'd-block', 'mx-auto', 'my-0', 'mb-3', 'font-weight-bold');
