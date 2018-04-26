@@ -109,22 +109,19 @@ An Example Character:
 
 ## Research Topics
 
-* (5 points) Integrate user authentication
-    * I'm going to be using both passport and passport-google-oath for user authentication
+* (4 points) Integrate user authentication
+    * I'm going to be using passport-google-oath for user authentication
 * (4 points) Perform client side form validation using validate.js
-    * I'm going to have client side form validation for adding quests.
-* (5 points) react.js
-    * I'm going to use react.js as the frontend framework
+    * I'm going to have client side form validation for adding quests and creating new games.
 * (2 points) Bootstrap
     * I'm going to use Bootstrap to style the website
 
-16 points total out of 8 required points.
+10 points total out of 8 required points.
 
 ## [Link to Initial Main Project File](app.js) 
 
 ## Annotations / References Used
 
 1. [passport.js authentication docs](http://passportjs.org/docs) - (link to source code coming soon)
-2. [tutorial on react.js](https://reactjs.org/tutorial/tutorial.html) - (link to source code coming soon)
-3. [validate.js validation docs](https://validatejs.org/) - (link to source code coming soon)
-4. [tutorial on Bootstrap](https://getbootstrap.com/docs/4.1/components/alerts/) - (link to source code coming soon)
+2. [validate.js validation docs](https://validatejs.org/) - (link to source code coming soon)
+3. [tutorial on Bootstrap](https://getbootstrap.com/docs/4.1/components/alerts/) - (link to source code coming soon)
