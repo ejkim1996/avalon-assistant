@@ -27,16 +27,13 @@ socket.on('startNewGame', (gameSlug) => {
 socket.on('showQuests', (questsAndGameID) => {
     const quests = questsAndGameID.quests;
     const gameSlug = questsAndGameID.gameSlug;
-    // console.log(quests[0]);
     const cardBody = document.querySelector('.quests-parent');
     let questsDiv = document.querySelector('.quests');
     questsDiv.remove();
     questsDiv = document.createElement('div'); 
     questsDiv.classList.add('quests');
     const completedQuests = document.createElement('div');
-    // completedQuests.classList.add('completed-quests');
     const emptyQuests = document.createElement('div');
-    // emptyQuests.classList.add('.empty-quests');
     let numSuccesses = 0;
     let numFails = 0;
     for (let i = 0; i < 5; i++) {
@@ -45,14 +42,12 @@ socket.on('showQuests', (questsAndGameID) => {
         if (quests[i]) {
             if (quests[i].success) {
                 numSuccesses++;
-                
                 questContainer.classList.add('sub-a');
                 questContainer.textContent = 'S';
                 questContainer.addEventListener('click', handleQuestCircleClick(gameSlug, i+1));
                 completedQuests.append(questContainer);
             } else {
                 numFails++;
-                
                 questContainer.classList.add('sub-b');                
                 questContainer.textContent = 'F';
                 questContainer.addEventListener('click', handleQuestCircleClick(gameSlug, i+1));                
@@ -86,22 +81,9 @@ socket.on('showQuests', (questsAndGameID) => {
     cardBody.append(questsDiv);
 });
 
-// socket.on('startGame', (data) => {
-//     window.location.href = '/game/play/' + data;
-// });
-
-// function handlePlayBtnClick(evt) {
-//     evt.preventDefault();
-//     const gameID = document.querySelector('.gameID');
-//     socket.emit('playBtnPressed', gameID.textContent);
-// }
-
 function main() {
     const gameID = document.querySelector('.gameID');    
     socket.emit('playScreenLoaded', gameID.textContent);
-
-    // const playBtn = document.querySelector('button');
-    // playBtn.addEventListener('click', handlePlayBtnClick);
 }
 
 document.addEventListener("DOMContentLoaded", main);

@@ -5,12 +5,6 @@
             //gameID is required
             presence: true
         },
-        // characters: {
-        //     presence: true,
-        //     length: {
-        //         minimum: 1
-        //     }
-        // },
         numberOfCharacters: {
             numericality: {
                 onlyInteger: true,
@@ -69,9 +63,6 @@
             errors.forEach(error => {
                 addError(messages, error);
             });
-            // _.each(errors, function (error) {
-            //     addError(messages, error);
-            // });
         } else {
             // otherwise we simply mark it as success
             formGroup.classList.add("has-success");
@@ -97,10 +88,9 @@
     function showErrors(form, errors) {
         console.log(form.querySelectorAll("input[name], select[name]"));
 
-        // // We loop through all the inputs and show the errors for that input
+        // We loop through all the inputs and show the errors for that input
         form.querySelectorAll("input[name], select[name]").forEach(input => {
             showErrorsForInput(input, errors && errors[input.name]);
-
         });
     }
 

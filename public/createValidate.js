@@ -5,12 +5,6 @@
             //gameID is required
             presence: true
         },
-        // characters: {
-        //     presence: true,
-        //     length: {
-        //         minimum: 1
-        //     }
-        // },
         numberOfCharacters: {
             numericality: {
                 onlyInteger: true,
@@ -69,9 +63,6 @@
             errors.forEach(error => {
                 addError(messages, error);
             });
-            // _.each(errors, function (error) {
-            //     addError(messages, error);
-            // });
         } else {
             // otherwise we simply mark it as success
             formGroup.classList.add("has-success");

@@ -299,8 +299,6 @@ app.get('/game/play/:gameSlug', (req, res) => {
                             
                         });
                     }
-
-
                 } else {
                     res.redirect('/game/join');
                 }

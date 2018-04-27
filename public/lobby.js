@@ -20,7 +20,6 @@ socket.on('showPlayers', (data) => {
         lobby.append(h3);
     });
     
-    
     numCharsRemaining = data.numChars;
     const waiting = document.querySelector('.waitingMessage');
     waiting.style.color = 'aquamarine';
