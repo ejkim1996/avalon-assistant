@@ -20,6 +20,8 @@ An Example Game with Embedded Quests:
 
 ```javascript
 {
+  gameID: "test game",
+  gameSlug: "test-game",
   //an array of player objects that stores player names and the characters they are playing
   players: [
     {
@@ -38,7 +40,8 @@ An Example Game with Embedded Quests:
         "avalonplayer1",
         "avalonplayer2" 
       ], 
-      success: true
+      success: true,
+      questNum: 'Quest 1'
     },
     { 
       numOfPlayers: "3", 
@@ -47,7 +50,8 @@ An Example Game with Embedded Quests:
         "avalonplayer2",
         "avalonplayer3"
       ], 
-      success: false
+      success: false,
+      questNum: 'Quest 2'
     }
   ]
 }
@@ -57,9 +61,9 @@ An Example User:
 
 ```javascript
 {
-  username: "avalonplayer",
-  name: "Jonathan",
-  password: // a password hash
+  name: "avalonplayer",
+  googleID: "googleID",
+  provide: "google";
 }
 ```
 
@@ -70,10 +74,12 @@ An Example Character:
   name: "avaloncharacter",
   description: //description of character and who the character gets to know
   knowledge: //an array of character names that the character can know
+  allegiance: // string detailing if the character is good, bad, or neither
+  select: // boolean to allow generic characters to have a select option so that more than one can be added to a game
 }
 ```
 
-## [Link to Commented First Draft Schema](db.js) 
+## [Link to Commented Schemas](db.js) 
 
 ## Wireframes
 
@@ -118,10 +124,13 @@ An Example Character:
 
 10 points total out of 8 required points.
 
-## [Link to Initial Main Project File](app.js) 
+## [Link to Main Project File](app.js) 
 
 ## Annotations / References Used
 
-1. [passport.js authentication docs](http://passportjs.org/docs) - (link to source code coming soon)
-2. [validate.js validation docs](https://validatejs.org/) - (link to source code coming soon)
-3. [tutorial on Bootstrap](https://getbootstrap.com/docs/4.1/components/alerts/) - (link to source code coming soon)
+1. [passport.js authentication docs](http://passportjs.org/docs) 
+    - [link to source code using passport.js](app.js#L45-102)
+2. [validate.js validation docs](https://validatejs.org/) 
+    - [link to source code using validate.js](public/lobbyValidate.js)
+3. [tutorial on Bootstrap](https://getbootstrap.com/docs/4.1/components/alerts/) 
+    - Bootstrap used on entire website
