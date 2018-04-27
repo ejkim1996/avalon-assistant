@@ -129,7 +129,7 @@ An Example Character:
 ## Annotations / References Used
 
 1. [passport.js authentication docs](http://passportjs.org/docs) 
-    - [link to source code using passport.js](app.js#L45-102)
+    - [link to source code using passport.js](app.js#L45-L102)
 2. [validate.js validation docs](https://validatejs.org/) 
     - [link to source code using validate.js](public/lobbyValidate.js)
 3. [tutorial on Bootstrap](https://getbootstrap.com/docs/4.1/components/alerts/) 
