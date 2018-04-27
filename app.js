@@ -310,6 +310,10 @@ app.get('/game/play/:gameSlug', (req, res) => {
     }
 });
 
+app.get('/debug', (req, res) => {
+    res.render('quest-add');
+});
+
 // GET /quest/add/:gameSlug
 //   Page to add a quest to the game
 //   specified by the gameSlug
